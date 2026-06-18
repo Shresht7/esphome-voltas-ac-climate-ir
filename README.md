@@ -25,6 +25,9 @@ climate:
     name: "Voltas AC"
 ```
 
+> [!TIP]
+> See the [`example-config.yaml`](example-config.yaml) for a complete example configuration.
+
 ---
 
 ## 🚧 Development
@@ -60,7 +63,7 @@ esp32:
     type: esp-idf
 ```
 
-2. Compile the `fake.yaml` configuration file using `esphome compile fake.yaml`
+2. Compile the `example-config.yaml` configuration file using `esphome compile example-config.yaml` once to generate the source files in the `build` folder.
 3. Create a `c_cpp_properties.json` file in the `.vscode` folder with the following content:
 
 ```json
@@ -86,7 +89,16 @@ esp32:
 I only added the `"name"` and `"includePath"` fields and the C++ extension was able to auto-populate the rest. We point it to our workspace folder, the `.esphome` folder where the generated source code files are located, and the PlatformIO toolchain folders where the ESPHome dependencies are located.
 
 4. Reload VS Code and the C++ files should now have intellisense for the ESPHome header files.
-5. You can now remove the `fake.yaml` file as it was only needed to generate the source code files for intellisense.
+
+### Check Compilation Errors
+
+To check if there are any compilation errors, you can run `esphome compile example-config.yaml` again to compile your ESPHome configuration file that uses this component. This will check if there are any syntax or type errors in the C++ code.
+
+Can also run the VS Code task `ESPHome: Compile` to do the same thing.
+
+#### Clean
+
+You may want to occasionally clean the generated source files, you can run `esphome clean example-config.yaml` to remove the `build` folder and all its contents.
 
 ---
 

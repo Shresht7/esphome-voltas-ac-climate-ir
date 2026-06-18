@@ -1,0 +1,28 @@
+esphome:
+  name: esphome-test
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+external_components:
+  - source:
+      type: local
+      path: components
+    components: [voltas_ac_climate_ir]
+    refresh: 10s # Clear the cache for development. See https://esphome.io/components/external_components/#refresh
+
+climate:
+  - platform: voltas_ac_climate_ir
+    name: Voltas AC
+
+remote_transmitter:
+  pin: GPIO2
+  carrier_duty_percent: 50% # 50% for IR LEDs
+  id: ir_transmitter
+
+remote_receiver:
+  - pin: 25
+    dump: all
+    id: ir_receiver
