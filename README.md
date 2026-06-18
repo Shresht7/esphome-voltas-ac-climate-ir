@@ -67,6 +67,17 @@ I only added the `"name"` and `"includePath"` fields and the C++ extension was a
 
 ---
 
+## 📕 References
+
+- [ESPHome](https://esphome.io/)
+- [ESPHome - IR Remote Climate](https://esphome.io/components/climate/climate_ir/)
+- [ESPHome - External Components](https://esphome.io/components/external_components/)
+- [ESPHome - Component Architecture](https://developers.esphome.io/architecture/components/)
+- [GitHub - ESPHome Starter Components](https://github.com/esphome/starter-components)
+- [Github - ESPHome Repository](https://github.com/esphome/esphome)
+
+---
+
 ## 📄 License
 
 MIT License. See [LICENSE](LICENSE) for more information.
