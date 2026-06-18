@@ -4,7 +4,30 @@ ESPHome External Component for a Voltas Window AC with Infrared (IR).
 
 ---
 
-## Development
+## 📖 Usage
+
+To import this component into your ESPHome project, add the following to your YAML configuration file:
+
+```yaml
+external_components:
+  - source:
+        type: git
+        url: https://github.com/Shresht7/esphome-voltas-ac-climate-ir
+        ref: main
+    components: [voltas_ac_climate_ir]
+```
+
+and then use the `voltas_ac_climate_ir` platform in your climate configuration:
+
+```yaml
+climate:
+  - platform: voltas_ac_climate_ir
+    name: "Voltas AC"
+```
+
+---
+
+## 🚧 Development
 
 ### Setup IDE Environment
 
