@@ -14,9 +14,8 @@ namespace esphome
             // TODO: Implement the logic to transmit the IR signal based on the current state of the climate entity (mode, temperature, fan speed, etc.)
 
             ESP_LOGD(TAG, "Transmitting IR signal for Voltas AC Climate Controller with current settings...");
-            ESP_LOGD(TAG, "Current Mode: %d", this->mode_);
-            ESP_LOGD(TAG, "Current Target Temperature: %.1f", this->target_temperature_);
-            ESP_LOGD(TAG, "Current Fan Speed: %d", this->fan_mode_);
+            ESP_LOGD(TAG, "Current Mode: %d", this->mode);
+            ESP_LOGD(TAG, "Current Target Temperature: %.1f", this->target_temperature);
             // Add more logs as needed to debug the state being transmitted
         }
 
