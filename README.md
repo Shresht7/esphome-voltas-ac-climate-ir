@@ -90,7 +90,7 @@ I only added the `"name"` and `"includePath"` fields and the C++ extension was a
 
 4. Reload VS Code and the C++ files should now have intellisense for the ESPHome header files.
 
-### Check Compilation Errors
+#### Check Compilation Errors
 
 To check if there are any compilation errors, you can run `esphome compile example-config.yaml` again to compile your ESPHome configuration file that uses this component. This will check if there are any syntax or type errors in the C++ code.
 
