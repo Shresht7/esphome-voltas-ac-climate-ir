@@ -24,6 +24,14 @@ climate:
   - platform: voltas_ac_climate_ir
     name: "Voltas AC"
 ```
+This requires an IR transmitter to be connected to the ESP device. You can configure the pin for the IR transmitter in the `voltas_ac_climate_ir` component configuration.
+
+```yaml
+remote_transmitter:
+  pin: GPIO4
+  carrier_duty_percent: 50% # 50% duty cycle is standard for most IR devices
+  id: ir_transmitter
+```
 
 > [!TIP]
 > See the [`example-config.yaml`](example-config.yaml) for a complete example configuration.
