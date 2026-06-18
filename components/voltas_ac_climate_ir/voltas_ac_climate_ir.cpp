@@ -9,6 +9,17 @@ namespace esphome
 
         static const char *TAG = "voltas_ac_climate_ir.climate";
 
+        esphome::climate::ClimateTraits VoltasACClimateIR::traits()
+        {
+            // Get the base traits from ClimateIR
+            auto traits = esphome::climate::ClimateTraits();
+
+            // Explicitly tell Home Assistant we ONLY support OFF and COOL
+            traits.set_supported_modes({esphome::climate::CLIMATE_MODE_OFF, esphome::climate::CLIMATE_MODE_COOL});
+
+            return traits;
+        }
+
         void VoltasACClimateIR::transmit_state()
         {
             // TODO: Implement the logic to transmit the IR signal based on the current state of the climate entity (mode, temperature, fan speed, etc.)

@@ -24,6 +24,9 @@ namespace esphome
             {
             }
 
+            // Override traits to specify the capabilities of this climate controller
+            esphome::climate::ClimateTraits traits() override;
+
             // Override the transmit method - called wheneer Home Assistant changes a setting
             void transmit_state() override;
         };
