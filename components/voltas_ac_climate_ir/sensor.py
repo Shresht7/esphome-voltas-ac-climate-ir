@@ -3,11 +3,11 @@ import esphome.config_validation as cv
 
 from esphome.components import sensor
 
-hello_world_ns = cg.esphome_ns.namespace('hello_world')
-HelloWorldSensor = hello_world_ns.class_('HelloWorld', cg.PollingComponent)
+voltas_ac_climate_ir_ns = cg.esphome_ns.namespace('voltas_ac_climate_ir')
+VoltasACClimateIR = voltas_ac_climate_ir_ns.class_('VoltasACClimateIR', cg.PollingComponent)
 
 CONFIG_SCHEMA = sensor.sensor_schema(
-    HelloWorldSensor,
+    VoltasACClimateIR,
     unit_of_measurement='°C',
     accuracy_decimals=1,
     icon='mdi:thermometer',
