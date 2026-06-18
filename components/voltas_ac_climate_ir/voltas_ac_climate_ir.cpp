@@ -7,28 +7,17 @@ namespace esphome
     namespace voltas_ac_climate_ir
     {
 
-        static const char *TAG = "voltas_ac_climate_ir.sensor";
+        static const char *TAG = "voltas_ac_climate_ir.climate";
 
-        void VoltasACClimateIR::setup()
+        void VoltasACClimateIR::transmit_state()
         {
-            ESP_LOGCONFIG(TAG, "Setting up Voltas AC Climate IR Sensor...");
-        }
+            // TODO: Implement the logic to transmit the IR signal based on the current state of the climate entity (mode, temperature, fan speed, etc.)
 
-        void VoltasACClimateIR::loop()
-        {
-            // This method will be called in every loop iteration.
-        }
-
-        void VoltasACClimateIR::update()
-        {
-            // This method will be called every time the polling interval triggers (5s).
-            // Publish our dummy value for demonstration purposes
-            this->publish_state(42.0);
-        }
-
-        void VoltasACClimateIR::dump_config()
-        {
-            ESP_LOGCONFIG(TAG, "Voltas AC Climate IR Sensor:");
+            ESP_LOGD(TAG, "Transmitting IR signal for Voltas AC Climate Controller with current settings...");
+            ESP_LOGD(TAG, "Current Mode: %d", this->mode_);
+            ESP_LOGD(TAG, "Current Target Temperature: %.1f", this->target_temperature_);
+            ESP_LOGD(TAG, "Current Fan Speed: %d", this->fan_mode_);
+            // Add more logs as needed to debug the state being transmitted
         }
 
     } // namespace voltas_ac_climate_ir

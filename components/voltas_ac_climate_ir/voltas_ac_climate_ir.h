@@ -1,20 +1,31 @@
 #pragma once
 
 #include "esphome/core/component.h"
-#include "esphome/components/sensor/sensor.h"
+#include "esphome/components/climate_ir/climate_ir.h"
 
 namespace esphome
 {
     namespace voltas_ac_climate_ir
     {
 
-        class VoltasACClimateIR : public esphome::sensor::Sensor, public esphome::PollingComponent
+        // Inherit from ClimateIR
+        class VoltasACClimateIR : public esphome::climate_ir::ClimateIR
         {
         public:
-            void setup() override;
-            void loop() override;
-            void update() override;
-            void dump_config() override;
+            // The constructor configures the capabilities shown in Home Assistant, such as supported modes, temperature range, etc.
+            VoltasACClimateIR() : esphome::climate_ir::ClimateIR(
+                                      16.0f,                                                                  // Minimum Temperature
+                                      30.0f,                                                                  // Maximum Temperature
+                                      1.0f,                                                                   // Temperature Step
+                                      false,                                                                  // Supports Dry Mode? (Hardcoded to false for now)
+                                      false,                                                                  // Supports Fan Only Mode? (Hardcoded to false for now)
+                                      {esphome::climate::CLIMATE_FAN_LOW, esphome::climate::CLIMATE_FAN_HIGH} // Supported Fan Speeds
+                                  )
+            {
+            }
+
+            // Override the transmit method - called wheneer Home Assistant changes a setting
+            void transmit_state() override;
         };
 
     } // namespace voltas_ac_climate_ir
