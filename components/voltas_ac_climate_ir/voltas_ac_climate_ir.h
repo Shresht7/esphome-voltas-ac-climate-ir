@@ -5,10 +5,10 @@
 
 namespace esphome
 {
-    namespace hello_world
+    namespace voltas_ac_climate_ir
     {
 
-        class HelloWorld : public esphome::sensor::Sensor, public esphome::PollingComponent
+        class VoltasACClimateIR : public esphome::sensor::Sensor, public esphome::PollingComponent
         {
         public:
             void setup() override;
@@ -17,6 +17,6 @@ namespace esphome
             void dump_config() override;
         };
 
-    } // namespace hello_world
+    } // namespace voltas_ac_climate_ir
 
 } // namespace esphome
