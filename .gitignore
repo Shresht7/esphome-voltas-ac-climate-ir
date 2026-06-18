@@ -1,0 +1,9 @@
+# Python
+.venv
+__pycache__
+
+# ESPHome
+.esphome
+
+# VS Code
+.vscode
