@@ -38,11 +38,13 @@ remote_transmitter:
 
 ---
 
-## IR Protocol
+## 🚨 IR Protocol
 
 To decipher the IR protocol for the AC Remote, we use an IR receiver to capture the IR codes sent by the remote.
 
 The protocol reverse-engineering process is documented in the [`protocol/observations.md`](protocol/observations.md) file.
+
+See also the [`protocol/concepts.md`](protocol/concepts.md) file for some basic concepts and terminology related to IR protocols.
 
 ---
 
