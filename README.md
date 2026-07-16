@@ -123,11 +123,16 @@ You may want to occasionally clean the generated source files, you can run `esph
 ## 📕 References
 
 - [ESPHome](https://esphome.io/)
+- [ESPHome - Climate Component](https://esphome.io/components/climate/)
 - [ESPHome - IR Remote Climate](https://esphome.io/components/climate/climate_ir/)
 - [ESPHome - External Components](https://esphome.io/components/external_components/)
 - [ESPHome - Component Architecture](https://developers.esphome.io/architecture/components/)
 - [GitHub - ESPHome Starter Components](https://github.com/esphome/starter-components)
 - [Github - ESPHome Repository](https://github.com/esphome/esphome)
+- [GitHub - IRremoteESP8266](https://github.com/crankyoldgit/IRremoteESP8266)
+- [GitHub - IRremoteESP8266 Adding support for a new AC protocol](https://github.com/crankyoldgit/IRremoteESP8266/wiki/Adding-support-for-a-new-AC-protocol)
+- [GitHub - IRremoteESP8266 Adding support for a new IR protocol](https://github.com/crankyoldgit/IRremoteESP8266/wiki/Adding-support-for-a-new-IR-protocol)
+- [GitHub - IRremoteESP8266 ir_Voltas.h](https://github.com/crankyoldgit/IRremoteESP8266/blob/master/src/ir_Voltas.h)
 
 ---
 
