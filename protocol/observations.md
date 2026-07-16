@@ -70,7 +70,19 @@ Can use the [`Merge-ProntoCodes.ps1`](../scripts/Merge-ProntoCodes.ps1) script t
 
 ## Priliminary Observations
 
-- Count: 166 for every observation
+- Count: 166 for every observation (with the exception of 26C -> 25C. misread?)
 - It looks like all codes begin with the same header `0000 006D 0051 0000` which is common for all codes.
-- Most of them end with `0180`.
+- Most of them end with `~002A 0180`.
 - A lot of repeating `002A`, `0028`, `0029`, `0014`, `0060` (or nearly similar values).
+- Variations are probably due to noise in the IR signals (apart from the actual differences in the commands).
+
+---
+
+## Retrying 26C -> 25C (Word Count Mismatch)
+
+Every other pronto-code has 166 words except for the 26C -> 25C which has 126. This was probably due to a misread of the IR signal.
+
+```
+0000 006D 0051 0000 0029 0015 0029 0016 0028 0062 0029 0062 0029 0015 0029 0015 0029 0062 0029 0063 0028 0015 002A 0014 0029 0063 0028 0016 0028 0062 0029 0016 0028 0015 002A 0014 0029 0062 0029 0015 0029 0016 0028 0015 0029 0063 0028 0016 0028 0015 002A 0015 0028 0016 0028 0016 0028 0015 0029 0063 0028 0062 0028 0016 0028 0015 0028 0063 0028 0016 0028 0016 0028 0063 0028 0063 0028 0063 0028 0016 0028 0063 0028 0063 0028 0016 0028 0016 0028 0063 0029 0062 0028 0063 0028 0016 0028 0063 0028 0063 0029 0015 0028 0016 0028 0063 0028 0063 0028 0063 0028 0016 0028 0063 0029 0062 0028 0016 0028 0016 0028 0016 0028 0063 0029 0015 0029 0015 0028 0016 0028 0063 0028 0016 0028 0016 0028 0016 0028 0016 0029 0015 0028 0016 0028 0016 0028 0063 0028 0016 0028 0063 0028 0016 0028 0016 0029 0015 0028 0016 0028 0016 0029 0015 0028 0180
+```
+yup, 166 words.
