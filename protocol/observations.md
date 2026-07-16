@@ -86,3 +86,25 @@ Every other pronto-code has 166 words except for the 26C -> 25C which has 126. T
 0000 006D 0051 0000 0029 0015 0029 0016 0028 0062 0029 0062 0029 0015 0029 0015 0029 0062 0029 0063 0028 0015 002A 0014 0029 0063 0028 0016 0028 0062 0029 0016 0028 0015 002A 0014 0029 0062 0029 0015 0029 0016 0028 0015 0029 0063 0028 0016 0028 0015 002A 0015 0028 0016 0028 0016 0028 0015 0029 0063 0028 0062 0028 0016 0028 0015 0028 0063 0028 0016 0028 0016 0028 0063 0028 0063 0028 0063 0028 0016 0028 0063 0028 0063 0028 0016 0028 0016 0028 0063 0029 0062 0028 0063 0028 0016 0028 0063 0028 0063 0029 0015 0028 0016 0028 0063 0028 0063 0028 0063 0028 0016 0028 0063 0029 0062 0028 0016 0028 0016 0028 0016 0028 0063 0029 0015 0029 0015 0028 0016 0028 0063 0028 0016 0028 0016 0028 0016 0028 0016 0029 0015 0028 0016 0028 0016 0028 0063 0028 0016 0028 0063 0028 0016 0028 0016 0029 0015 0028 0016 0028 0016 0029 0015 0028 0180
 ```
 yup, 166 words.
+
+---
+
+## Parsing the Pronto
+
+Created a script to parse the pronto codes: [`./scripts/pronto-parser.py`](./scripts/pronto-parser.py)
+
+According to the Pronto Specification, the first four words are the header, which includes the frequency and the number of burst pairs; and the rest of the words are the burst pairs, which represent the on and off durations of the IR signal.
+
+- `format` - The first word is the format code. For Pronto codes, this is usually `0000`.
+- `frequency` - The second word is the frequency code, which is used to calculate the carrier frequency of the IR signal. The frequency in Hz can be calculated using the formula: `frequency = 1 / (frequency_code * 0.241246)`. For example, if the frequency code is `006D`, the carrier frequency would be approximately 38 kHz.
+The number `0.241246` comes from the timebase used in the Pronto format, which is 0.241246 microseconds per tick. The frequency code is in hexadecimal, so it needs to be converted to decimal before applying the formula.
+- `burst_pairs`: The third word is the number of burst pairs in the code. A burst-pair consists of the mark and space segments of the IR signal.
+- `repeat`: Not sure about this. This is 0000 in all my observations. If I were to hazard a guess, this might be the number of times the code should be repeated when sent. for redundancy perhaps?
+
+After the header, the rest of the words are the burst pairs, which represent the on and off durations of the IR signal. Each burst pair consists of two words: the first word represents the duration of the mark (the time the IR LED is on), and the second word represents the duration of the space (the time the IR LED is off). The durations are in units of 0.241246 microseconds (the timebase).
+
+All marks seem to be `002A`, `0028`, or `0029` (or similar). Spaces are either ~`0014` or ~`0060`. This is probably the bit encoding of the signal. I'll start with the assumption that `0014` is a `0` and `0060` is a `1` and see what we can glean from that.
+
+The last one is different from the others. It is `0180` instead of `0014` or `0060`. This is probably the end of the signal, and it is a longer duration to indicate the end of the transmission.
+
+Excluding the headers and the footer, there are 160 words (80 burst pairs) in each observation. Assuming the burst pair encodes a single bit, it would mean that each observation encodes 80 bits (10 bytes) of data.
