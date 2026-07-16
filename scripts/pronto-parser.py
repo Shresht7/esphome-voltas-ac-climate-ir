@@ -11,6 +11,9 @@ The Pronto Hex format represents IR signals as a series of hexadecimal values, w
 # ///
 
 from defcmd import cmd
+import json
+from typing import Literal
+
 
 def parse_pronto(code: str) -> dict:
     """
@@ -65,10 +68,13 @@ def parse_pronto(code: str) -> dict:
 
 
 @cmd
-def parse(hex_code: str):
+def parse(hex_code: str, format: Literal["text", "json"] = "text"):
     """Parse a Pronto hex string and display its structure."""
     result = parse_pronto(hex_code)
-    display(result, show_all_pairs=True)
+    if format == "json":
+        print(json.dumps(result))
+    else:
+        display(result, show_all_pairs=True)
 
 
 def display(result, show_all_pairs: bool = False):
