@@ -91,7 +91,7 @@ namespace esphome
             for (uint8_t b = 0; b < FRAME_BYTES; b++)
             {
                 // For each byte, iterate over its bits from MSB to LSB adding the corresponding mark and space durations to the data
-                for (uint8_t mask = 0x80; mask; mask >>= 1)
+                for (uint8_t mask = 0b10000000; mask; mask >>= 1)
                 {
                     data->mark(DURATION_MARK); // Add the constant mark duration
 
@@ -116,7 +116,7 @@ namespace esphome
 
             for (uint8_t b = 0; b < FRAME_BYTES; b++)
             {
-                for (uint8_t mask = 0x80; mask; mask >>= 1)
+                for (uint8_t mask = 0b10000000; mask; mask >>= 1)
                 {
                     if (data->expect_item(DURATION_MARK, DURATION_SPACE_LONG))
                     {
