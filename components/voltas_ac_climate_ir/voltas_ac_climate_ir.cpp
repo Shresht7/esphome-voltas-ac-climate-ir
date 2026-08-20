@@ -52,6 +52,10 @@ namespace esphome
                 return false; // Decoding failed, return false to indicate unsuccessful reception
             }
 
+            ESP_LOGD(TAG, "Received IR Frame: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
+                     frame.payload()[0], frame.payload()[1], frame.payload()[2], frame.payload()[3], frame.payload()[4],
+                     frame.payload()[5], frame.payload()[6], frame.payload()[7], frame.payload()[8], frame.payload()[9]);
+
             this->mode = frame.get_power() ? esphome::climate::CLIMATE_MODE_COOL : esphome::climate::CLIMATE_MODE_OFF;
 
             this->publish_state(); // Publish the updated state to Home Assistant
