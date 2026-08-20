@@ -29,6 +29,9 @@ namespace esphome
 
             // Override the transmit method - called wheneer Home Assistant changes a setting
             void transmit_state() override;
+
+            // Override the receive method - called whenever an IR frame is received
+            bool on_receive(remote_base::RemoteReceiveData data) override;
         };
 
     } // namespace voltas_ac_climate_ir

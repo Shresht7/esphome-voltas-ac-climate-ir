@@ -11,6 +11,17 @@ Frames are transmitted on a **38 kHz carrier** (`006D` frequency code) using **P
 - Short space → bit `0`
 - Long space → bit `1`
 
+### Timing (ticks → microseconds)
+
+The Pronto frequency code `006D` (109) converts to a carrier via `frequency (Hz) = 1000000 / (code × 0.241246)` ≈ **38,029 Hz**, i.e. **26.3 µs per tick**. The nominal tick values (dominant histogram peaks) translate to:
+
+| Element                 | Ticks | µs        |
+| ----------------------- | ----- | --------- |
+| Mark                    | 40    | **1052**  |
+| Short space (bit 0)     | 22    | **579**   |
+| Long space (bit 1)      | 99    | **2603**  |
+| Footer (trailing space) | 384   | **10098** |
+
 ## Frame Structure
 
 Each frame is **166 Pronto words**:
@@ -37,7 +48,7 @@ Bits are numbered 7 (MSB) to 0 (LSB). Derived from all 22 captures.
 | 7    | all  | `00010001` (`0x11`)                             | Constant; role not established                     |
 | 8    | 5    | `1` = lamp                                      | Lamp                                               |
 | 8    | 4    | `1` = horizontal swing                          | Horizontal swing                                   |
-| 9    | —    | one's-complement of sum                         | Checksum (see below)                               |
+| 9    | --   | one's-complement of sum                         | Checksum (see below)                               |
 
 ### Byte 1 detail
 
