@@ -84,6 +84,20 @@ namespace esphome
             update_checksum();                                                      // Recalculate the checksum after changing the fan speed
         }
 
+        // MODE
+        // ----
+
+        void VoltasIRFrame::set_mode(uint8_t mode)
+        {
+            frame_[1] = (frame_[1] & 0b11110000) | (mode & 0b00001111); // Set the mode value in Byte 1 (bits 3-0)
+            update_checksum();                                          // Recalculate the checksum after changing the mode
+        }
+
+        uint8_t VoltasIRFrame::get_mode() const
+        {
+            return frame_[1] & 0b00001111; // Extract the mode value from Byte 1 (bits 3-0)
+        }
+
         // CHECKSUM
         // --------
 

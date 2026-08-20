@@ -60,6 +60,15 @@ namespace esphome
             // Returns the current fan speed from the frame
             uint8_t get_fan_speed() const;
 
+            // MODE
+            // ----
+
+            // Method to set the mode (e.g., COOL, HEAT, FAN_ONLY)
+            void set_mode(uint8_t mode);
+
+            // Returns the current mode from the frame
+            uint8_t get_mode() const;
+
             // PAYLOAD ENCODER / DECODER
             // -------------------------
 
