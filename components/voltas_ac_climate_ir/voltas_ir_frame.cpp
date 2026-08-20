@@ -1,5 +1,18 @@
 #include "voltas_ir_frame.h"
 
+static constexpr uint32_t CARRIER_FREQUENCY = 38000;            // Carrier Frequency in Hz (38 kHz)
+static constexpr double TIMEBASE = 1000000 / CARRIER_FREQUENCY; // Timebase in microseconds (µs)
+
+static constexpr uint32_t PRONTO_MARK = 40;        // Pronto mark duration in ticks
+static constexpr uint32_t PRONTO_SPACE_SHORT = 22; // Pronto short space duration in ticks
+static constexpr uint32_t PRONTO_SPACE_LONG = 99;  // Pronto long space duration in ticks
+static constexpr uint32_t PRONTO_FOOTER = 0x180;   // Pronto footer duration in ticks
+
+static constexpr uint32_t DURATION_MARK = PRONTO_MARK * TIMEBASE;               // Duration of the mark in microseconds (µs)
+static constexpr uint32_t DURATION_SPACE_SHORT = PRONTO_SPACE_SHORT * TIMEBASE; // Duration of the short space in microseconds (µs)
+static constexpr uint32_t DURATION_SPACE_LONG = PRONTO_SPACE_LONG * TIMEBASE;   // Duration of the long space in microseconds (µs)
+static constexpr uint32_t DURATION_FOOTER = PRONTO_FOOTER * TIMEBASE;           // Duration of the footer (trailing space) in microseconds (µs)
+
 namespace esphome
 {
     namespace voltas_ac_climate_ir
