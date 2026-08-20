@@ -49,6 +49,7 @@ namespace esphome
             // Decode the received IR data into the frame
             if (!frame.decode(&data))
             {
+                ESP_LOGD(TAG, "Failed to decode received IR frame.");
                 return false; // Decoding failed, return false to indicate unsuccessful reception
             }
 
