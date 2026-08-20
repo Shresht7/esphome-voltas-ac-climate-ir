@@ -15,8 +15,20 @@ static constexpr auto FAN_SPEEDS = {
     esphome::climate::CLIMATE_FAN_AUTO,
 };
 
+// Supports Dry Mode
+static constexpr bool SUPPORTS_DRY_MODE = true;
+
 // Supports Fan-Only Mode
 static constexpr bool SUPPORTS_FAN_ONLY = true;
+
+// Supported Climate Modes
+static constexpr auto SUPPORTED_MODES = {
+    esphome::climate::CLIMATE_MODE_OFF,
+    esphome::climate::CLIMATE_MODE_COOL,
+    esphome::climate::CLIMATE_MODE_DRY,
+    // esphome::climate::CLIMATE_MODE_HEAT,
+    esphome::climate::CLIMATE_MODE_FAN_ONLY,
+};
 
 namespace esphome
 {
@@ -32,8 +44,8 @@ namespace esphome
                                       MIN_TEMPERATURE,   // Minimum Temperature
                                       MAX_TEMPERATURE,   // Maximum Temperature
                                       TEMPERATURE_STEP,  // Temperature Step
-                                      false,             // Supports Dry Mode? (Hardcoded to false for now)
-                                      SUPPORTS_FAN_ONLY, // Supports Fan Only Mode? (Hardcoded to false for now)
+                                      SUPPORTS_DRY_MODE, // Supports Dry Mode
+                                      SUPPORTS_FAN_ONLY, // Supports Fan Only Mode
                                       FAN_SPEEDS         // Supported Fan Speeds
                                   )
             {
@@ -56,6 +68,12 @@ namespace esphome
 
             // Helper function to get the fan mode from the fan speed
             static esphome::climate::ClimateFanMode get_fan_mode_from_speed(uint8_t fan_speed);
+
+            // Helper function to get the mode from the climate mode
+            static uint8_t get_bits_from_climate_mode(esphome::climate::ClimateMode mode);
+
+            // Helper function to get the climate mode from the mode
+            static esphome::climate::ClimateMode get_climate_mode_from_bits(uint8_t mode);
         };
 
     } // namespace voltas_ac_climate_ir

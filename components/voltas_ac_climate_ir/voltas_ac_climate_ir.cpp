@@ -17,8 +17,8 @@ namespace esphome
             // Get the base traits from ClimateIR
             auto traits = esphome::climate_ir::ClimateIR::traits();
 
-            // Explicitly tell Home Assistant we ONLY support OFF and COOL
-            traits.set_supported_modes({esphome::climate::CLIMATE_MODE_OFF, esphome::climate::CLIMATE_MODE_COOL});
+            // Explicitly tell Home Assistant which modes are supported by this climate controller
+            traits.set_supported_modes(SUPPORTED_MODES);
 
             return traits;
         }
@@ -40,6 +40,13 @@ namespace esphome
             // Set the fan speed based on the current fan mode (defaulting to AUTO if not set)
             uint8_t fan_speed = get_fan_speed_from_mode(this->fan_mode.value_or(esphome::climate::CLIMATE_FAN_AUTO));
             frame.set_fan_speed(fan_speed);
+
+            // Set the mode based on the current climate mode (only if not OFF)
+            if (this->mode != esphome::climate::CLIMATE_MODE_OFF)
+            {
+                uint8_t climate_mode = get_bits_from_climate_mode(this->mode);
+                frame.set_mode(climate_mode);
+            }
 
             // Construct the IR Payload
             const uint8_t *payload = frame.payload();
@@ -74,7 +81,16 @@ namespace esphome
                      frame.payload()[5], frame.payload()[6], frame.payload()[7], frame.payload()[8], frame.payload()[9]);
 
             // Update the climate state based on the received frame
-            this->mode = frame.get_power() ? esphome::climate::CLIMATE_MODE_COOL : esphome::climate::CLIMATE_MODE_OFF;
+            if (!frame.get_power())
+            {
+                this->mode = esphome::climate::CLIMATE_MODE_OFF; // If power is off, set mode to OFF
+            }
+            else
+            {
+                // If power is on, update the mode based on the received frame
+                uint8_t received_mode = frame.get_mode();
+                this->mode = get_climate_mode_from_bits(received_mode);
+            }
 
             // Update the target temperature based on the received frame
             const uint8_t received_temperature = frame.get_temperature();
@@ -139,6 +155,46 @@ namespace esphome
             default:
                 ESP_LOGW(TAG, "Unsupported fan speed: %d", fan_speed);
                 return esphome::climate::CLIMATE_FAN_AUTO; // Default to Auto if unsupported
+            }
+        }
+
+        uint8_t VoltasACClimateIR::get_bits_from_climate_mode(esphome::climate::ClimateMode mode)
+        {
+            switch (mode)
+            {
+            case esphome::climate::CLIMATE_MODE_OFF:
+                return 0b0000;
+            case esphome::climate::CLIMATE_MODE_COOL:
+                return 0b1000;
+            case esphome::climate::CLIMATE_MODE_DRY:
+                return 0b0100;
+            case esphome::climate::CLIMATE_MODE_HEAT:
+                return 0b0010;
+            case esphome::climate::CLIMATE_MODE_FAN_ONLY:
+                return 0b0001;
+            default:
+                ESP_LOGW(TAG, "Unsupported climate mode: %d", static_cast<int>(mode));
+                return 0b1000; // Default to Cool if unsupported
+            }
+        }
+
+        esphome::climate::ClimateMode VoltasACClimateIR::get_climate_mode_from_bits(uint8_t mode)
+        {
+            switch (mode)
+            {
+            case 0b0000:
+                return esphome::climate::CLIMATE_MODE_OFF;
+            case 0b1000:
+                return esphome::climate::CLIMATE_MODE_COOL;
+            case 0b0100:
+                return esphome::climate::CLIMATE_MODE_DRY;
+            case 0b0010:
+                return esphome::climate::CLIMATE_MODE_HEAT;
+            case 0b0001:
+                return esphome::climate::CLIMATE_MODE_FAN_ONLY;
+            default:
+                ESP_LOGW(TAG, "Unsupported mode: %d", mode);
+                return esphome::climate::CLIMATE_MODE_COOL; // Default to Cool if unsupported
             }
         }
 
