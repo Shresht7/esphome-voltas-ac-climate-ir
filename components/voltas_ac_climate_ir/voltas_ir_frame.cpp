@@ -39,6 +39,11 @@ namespace esphome
             update_checksum(); // Calculate and set the checksum for the initial frame
         }
 
+        bool VoltasIRFrame::get_power() const
+        {
+            return (frame_[2] & 0b10000000) != 0; // Check if the power bit (bit 7) in Byte 2 is set
+        }
+
         void VoltasIRFrame::set_power(bool on)
         {
             frame_[2] = (on ? 0b10000000 : 0b00000000); // Set the power state in Byte 2

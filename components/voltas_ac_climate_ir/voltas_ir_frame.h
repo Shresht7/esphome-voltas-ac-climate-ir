@@ -34,6 +34,9 @@ namespace esphome
 
             // Encodes the frame into IR signal timings (in microseconds) with PDM (constant mark + short/long space per bit) for transmission
             void encode(remote_base::RemoteTransmitData *data) const;
+
+            // Returns the current power state (on/off) from the frame
+            bool get_power() const;
         };
 
     } // namespace voltas_ac_climate_ir
