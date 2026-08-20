@@ -26,7 +26,7 @@ static constexpr auto SUPPORTED_MODES = {
     esphome::climate::CLIMATE_MODE_OFF,
     esphome::climate::CLIMATE_MODE_COOL,
     esphome::climate::CLIMATE_MODE_DRY,
-    esphome::climate::CLIMATE_MODE_HEAT,
+    // esphome::climate::CLIMATE_MODE_HEAT,
     esphome::climate::CLIMATE_MODE_FAN_ONLY,
 };
 

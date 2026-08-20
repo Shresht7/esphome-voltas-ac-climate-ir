@@ -17,7 +17,7 @@ namespace esphome
             // Get the base traits from ClimateIR
             auto traits = esphome::climate_ir::ClimateIR::traits();
 
-            // Explicitly tell Home Assistant we ONLY support OFF and COOL
+            // Explicitly tell Home Assistant which modes are supported by this climate controller
             traits.set_supported_modes(SUPPORTED_MODES);
 
             return traits;
