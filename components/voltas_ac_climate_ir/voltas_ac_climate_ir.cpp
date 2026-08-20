@@ -37,6 +37,10 @@ namespace esphome
             uint8_t temperature = clamp_temperature(this->target_temperature);
             frame.set_temperature(temperature);
 
+            // Set the fan speed based on the current fan mode (defaulting to AUTO if not set)
+            uint8_t fan_speed = get_fan_speed_from_mode(this->fan_mode.value_or(esphome::climate::CLIMATE_FAN_AUTO));
+            frame.set_fan_speed(fan_speed);
+
             // Construct the IR Payload
             const uint8_t *payload = frame.payload();
 
@@ -81,6 +85,10 @@ namespace esphome
             }
             this->target_temperature = static_cast<float>(received_temperature);
 
+            // Update the fan mode based on the received frame (defaulting to AUTO if the received fan speed is unsupported)
+            const uint8_t received_fan_speed = frame.get_fan_speed();
+            this->fan_mode = get_fan_mode_from_speed(received_fan_speed);
+
             this->publish_state(); // Publish the updated state to Home Assistant
             return true;           // Indicate successful reception
         }
@@ -96,6 +104,42 @@ namespace esphome
             if (temperature > MAX_TEMPERATURE)
                 return static_cast<uint8_t>(MAX_TEMPERATURE);
             return static_cast<uint8_t>(round(temperature / TEMPERATURE_STEP) * TEMPERATURE_STEP);
+        }
+
+        uint8_t VoltasACClimateIR::get_fan_speed_from_mode(esphome::climate::ClimateFanMode fan_mode)
+        {
+            switch (fan_mode)
+            {
+            case esphome::climate::CLIMATE_FAN_LOW:
+                return 0b100; // Low fan speed
+            case esphome::climate::CLIMATE_FAN_MEDIUM:
+                return 0b010; // Medium fan speed
+            case esphome::climate::CLIMATE_FAN_HIGH:
+                return 0b001; // High fan speed
+            case esphome::climate::CLIMATE_FAN_AUTO:
+                return 0b111; // Auto fan speed
+            default:
+                ESP_LOGW(TAG, "Unsupported fan mode: %d", static_cast<int>(fan_mode));
+                return 0b111; // Default to Auto if unsupported
+            }
+        }
+
+        esphome::climate::ClimateFanMode VoltasACClimateIR::get_fan_mode_from_speed(uint8_t fan_speed)
+        {
+            switch (fan_speed)
+            {
+            case 0b100:
+                return esphome::climate::CLIMATE_FAN_LOW;
+            case 0b010:
+                return esphome::climate::CLIMATE_FAN_MEDIUM;
+            case 0b001:
+                return esphome::climate::CLIMATE_FAN_HIGH;
+            case 0b111:
+                return esphome::climate::CLIMATE_FAN_AUTO;
+            default:
+                ESP_LOGW(TAG, "Unsupported fan speed: %d", fan_speed);
+                return esphome::climate::CLIMATE_FAN_AUTO; // Default to Auto if unsupported
+            }
         }
 
     } // namespace voltas_ac_climate_ir

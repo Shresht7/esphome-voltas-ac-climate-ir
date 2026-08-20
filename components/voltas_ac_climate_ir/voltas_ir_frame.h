@@ -13,8 +13,14 @@ namespace esphome
         {
 
         private:
+            // IR FRAME
+            // --------
+
             // Array to hold the 10 bytes of the IR frame
             uint8_t frame_[10];
+
+            // CHECKSUM
+            // --------
 
             // Method to calculate the checksum for the frame
             uint8_t calculate_checksum() const;
@@ -27,17 +33,35 @@ namespace esphome
             // Constructor to initialize the frame with default values
             VoltasIRFrame();
 
+            // POWER
+            // -----
+
             // Method to set the power state (on/off)
             void set_power(bool on);
 
             // Returns the current power state (on/off) from the frame
             bool get_power() const;
 
+            // TEMPERATURE
+            // -----------
+
             // Method to set the temperature  (in Celsius)
             void set_temperature(uint8_t temperature);
 
             // Returns the current temperature (in Celsius) from the frame
             uint8_t get_temperature() const;
+
+            // FAN
+            // ---
+
+            // Method to set the fan speed
+            void set_fan_speed(uint8_t fan_speed);
+
+            // Returns the current fan speed from the frame
+            uint8_t get_fan_speed() const;
+
+            // PAYLOAD ENCODER / DECODER
+            // -------------------------
 
             // Returns the IR Frame Payload (10 bytes - with the checksum computed)
             const uint8_t *payload() const;

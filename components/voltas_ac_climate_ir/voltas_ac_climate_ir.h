@@ -7,6 +7,17 @@ static constexpr float MIN_TEMPERATURE = 16.0f; // Minimum temperature in Celsiu
 static constexpr float MAX_TEMPERATURE = 30.0f; // Maximum temperature in Celsius
 static constexpr float TEMPERATURE_STEP = 1.0f; // Temperature step in Celsius
 
+// Supported fan speeds
+static constexpr auto FAN_SPEEDS = {
+    esphome::climate::CLIMATE_FAN_LOW,
+    esphome::climate::CLIMATE_FAN_MEDIUM,
+    esphome::climate::CLIMATE_FAN_HIGH,
+    esphome::climate::CLIMATE_FAN_AUTO,
+};
+
+// Supports Fan-Only Mode
+static constexpr bool SUPPORTS_FAN_ONLY = true;
+
 namespace esphome
 {
     namespace voltas_ac_climate_ir
@@ -18,12 +29,12 @@ namespace esphome
         public:
             // The constructor configures the capabilities shown in Home Assistant, such as supported modes, temperature range, etc.
             VoltasACClimateIR() : esphome::climate_ir::ClimateIR(
-                                      MIN_TEMPERATURE,                                                        // Minimum Temperature
-                                      MAX_TEMPERATURE,                                                        // Maximum Temperature
-                                      TEMPERATURE_STEP,                                                       // Temperature Step
-                                      false,                                                                  // Supports Dry Mode? (Hardcoded to false for now)
-                                      false,                                                                  // Supports Fan Only Mode? (Hardcoded to false for now)
-                                      {esphome::climate::CLIMATE_FAN_LOW, esphome::climate::CLIMATE_FAN_HIGH} // Supported Fan Speeds
+                                      MIN_TEMPERATURE,   // Minimum Temperature
+                                      MAX_TEMPERATURE,   // Maximum Temperature
+                                      TEMPERATURE_STEP,  // Temperature Step
+                                      false,             // Supports Dry Mode? (Hardcoded to false for now)
+                                      SUPPORTS_FAN_ONLY, // Supports Fan Only Mode? (Hardcoded to false for now)
+                                      FAN_SPEEDS         // Supported Fan Speeds
                                   )
             {
             }
@@ -39,6 +50,12 @@ namespace esphome
 
             // Clamp the temperature to the valid range and round to the nearest step
             static uint8_t clamp_temperature(float temperature);
+
+            // Helper function to get the fan speed from the fan mode
+            static uint8_t get_fan_speed_from_mode(esphome::climate::ClimateFanMode fan_mode);
+
+            // Helper function to get the fan mode from the fan speed
+            static esphome::climate::ClimateFanMode get_fan_mode_from_speed(uint8_t fan_speed);
         };
 
     } // namespace voltas_ac_climate_ir

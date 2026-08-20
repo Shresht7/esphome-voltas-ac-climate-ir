@@ -70,6 +70,20 @@ namespace esphome
             update_checksum();                                                 // Recalculate the checksum after changing the temperature
         }
 
+        // FAN SPEED
+        // ---------
+
+        uint8_t VoltasIRFrame::get_fan_speed() const
+        {
+            return (frame_[1] >> 5) & 0b00000111; // Extract the fan speed value from Byte 1 (bits 7-5)
+        }
+
+        void VoltasIRFrame::set_fan_speed(uint8_t fan_speed)
+        {
+            frame_[1] = (frame_[1] & 0b00011111) | ((fan_speed & 0b00000111) << 5); // Set the fan speed value in Byte 1 (bits 7-5)
+            update_checksum();                                                      // Recalculate the checksum after changing the fan speed
+        }
+
         // CHECKSUM
         // --------
 
