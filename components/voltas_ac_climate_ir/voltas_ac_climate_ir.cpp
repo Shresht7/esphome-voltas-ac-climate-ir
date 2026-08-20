@@ -1,6 +1,7 @@
 #include "esphome/core/log.h"
 
 #include "voltas_ac_climate_ir.h"
+#include "voltas_ir_frame.h"
 
 namespace esphome
 {
@@ -22,12 +23,15 @@ namespace esphome
 
         void VoltasACClimateIR::transmit_state()
         {
-            // TODO: Implement the logic to transmit the IR signal based on the current state of the climate entity (mode, temperature, fan speed, etc.)
+            VoltasIRFrame frame;
 
-            ESP_LOGD(TAG, "Transmitting IR signal for Voltas AC Climate Controller with current settings...");
-            ESP_LOGD(TAG, "Current Mode: %d", this->mode);
-            ESP_LOGD(TAG, "Current Target Temperature: %.1f", this->target_temperature);
-            // Add more logs as needed to debug the state being transmitted
+            // Set the power state based on the current mode
+            frame.set_power(this->mode != esphome::climate::CLIMATE_MODE_OFF);
+
+            const uint8_t *payload = frame.payload();
+            ESP_LOGD(TAG, "Transmitting IR Frame: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
+                     payload[0], payload[1], payload[2], payload[3], payload[4],
+                     payload[5], payload[6], payload[7], payload[8], payload[9]);
         }
 
     } // namespace voltas_ac_climate_ir
