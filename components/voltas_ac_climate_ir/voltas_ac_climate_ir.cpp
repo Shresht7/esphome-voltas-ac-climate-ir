@@ -42,5 +42,21 @@ namespace esphome
             transmit.perform();
         }
 
+        bool VoltasACClimateIR::on_receive(remote_base::RemoteReceiveData data)
+        {
+            VoltasIRFrame frame; // Create a new frame to decode the received data
+
+            if (!frame.decode(&data))
+            {
+                ESP_LOGW(TAG, "Failed to decode received IR frame.");
+                return false;
+            }
+
+            this->mode = frame.get_power() ? esphome::climate::CLIMATE_MODE_COOL : esphome::climate::CLIMATE_MODE_OFF;
+
+            this->publish_state(); // Publish the updated state to Home Assistant
+            return true;           // Indicate successful reception
+        }
+
     } // namespace voltas_ac_climate_ir
 } // namespace esphome
