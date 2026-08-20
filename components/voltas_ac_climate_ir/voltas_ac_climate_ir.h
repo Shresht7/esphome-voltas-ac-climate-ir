@@ -15,6 +15,9 @@ static constexpr auto FAN_SPEEDS = {
     esphome::climate::CLIMATE_FAN_AUTO,
 };
 
+// Supports Dry Mode
+static constexpr bool SUPPORTS_DRY_MODE = true;
+
 // Supports Fan-Only Mode
 static constexpr bool SUPPORTS_FAN_ONLY = true;
 
@@ -32,8 +35,8 @@ namespace esphome
                                       MIN_TEMPERATURE,   // Minimum Temperature
                                       MAX_TEMPERATURE,   // Maximum Temperature
                                       TEMPERATURE_STEP,  // Temperature Step
-                                      false,             // Supports Dry Mode? (Hardcoded to false for now)
-                                      SUPPORTS_FAN_ONLY, // Supports Fan Only Mode? (Hardcoded to false for now)
+                                      SUPPORTS_DRY_MODE, // Supports Dry Mode
+                                      SUPPORTS_FAN_ONLY, // Supports Fan Only Mode
                                       FAN_SPEEDS         // Supported Fan Speeds
                                   )
             {
