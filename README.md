@@ -135,6 +135,7 @@ You may want to occasionally clean the generated source files, you can run `esph
 - [GitHub - IRremoteESP8266 Adding support for a new AC protocol](https://github.com/crankyoldgit/IRremoteESP8266/wiki/Adding-support-for-a-new-AC-protocol)
 - [GitHub - IRremoteESP8266 Adding support for a new IR protocol](https://github.com/crankyoldgit/IRremoteESP8266/wiki/Adding-support-for-a-new-IR-protocol)
 - [GitHub - IRremoteESP8266 ir_Voltas.h](https://github.com/crankyoldgit/IRremoteESP8266/blob/master/src/ir_Voltas.h)
+- [GitHub - ESPHome Yashima Component](https://github.com/esphome/esphome/blob/bf12af46458c023a372d76f07800426550b702c4/esphome/components/yashima/yashima.cpp)
 
 ---
 
