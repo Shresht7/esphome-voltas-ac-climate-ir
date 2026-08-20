@@ -36,16 +36,16 @@ namespace esphome
                                              0b00000000} // Byte 9: Checksum. Will be calculated and set in the constructor
         {
             // Initialize the frame with default values
-            checksum(); // Calculate and set the checksum for the initial frame
+            update_checksum(); // Calculate and set the checksum for the initial frame
         }
 
         void VoltasIRFrame::set_power(bool on)
         {
             frame_[2] = (on ? 0b10000000 : 0b00000000); // Set the power state in Byte 2
-            checksum();                                 // Recalculate the checksum after changing the power state
+            update_checksum();                          // Recalculate the checksum after changing the power state
         }
 
-        void VoltasIRFrame::checksum()
+        uint8_t VoltasIRFrame::calculate_checksum() const
         {
             uint8_t checksum = 0;
             for (uint8_t i = 0; i <= 8; i++)
@@ -53,14 +53,18 @@ namespace esphome
                 checksum += frame_[i]; // Sum the first 9 bytes of the frame
             }
             // Get the one's complement of the sum
-            checksum = ~checksum;
-            frame_[9] = checksum; // Set the checksum in Byte 9
+            return ~checksum;
+        }
+
+        void VoltasIRFrame::update_checksum()
+        {
+            frame_[9] = calculate_checksum(); // Set the checksum in Byte 9
         }
 
         const uint8_t *VoltasIRFrame::payload() const
         {
-            const_cast<VoltasIRFrame *>(this)->checksum(); // Ensure the checksum is up-to-date before returning the payload
-            return frame_;                                 // Return the pointer to the frame array
+            const_cast<VoltasIRFrame *>(this)->update_checksum(); // Ensure the checksum is up-to-date before returning the payload
+            return frame_;                                        // Return the pointer to the frame array
         }
 
         void VoltasIRFrame::encode(remote_base::RemoteTransmitData *data) const

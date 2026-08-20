@@ -16,8 +16,11 @@ namespace esphome
             // Array to hold the 10 bytes of the IR frame
             uint8_t frame_[10];
 
-            // Method to calculate and set the checksum for the frame
-            void checksum();
+            // Method to calculate the checksum for the frame
+            uint8_t calculate_checksum() const;
+
+            // Method to update the checksum in the frame
+            void update_checksum();
 
         public:
             // Constructor to initialize the frame with default values
