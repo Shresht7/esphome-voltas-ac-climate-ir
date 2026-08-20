@@ -23,6 +23,9 @@ namespace esphome
     namespace voltas_ac_climate_ir
     {
 
+        // CONSTRUCTOR
+        // -----------
+
         VoltasIRFrame::VoltasIRFrame() : frame_{
                                              0b00110011, // Byte 0: Constant. Unknown Purpose. Possibly Identifier or Signature?
                                              0b00101000, // Byte 1: Encodes the Fan Mode (bits 7-5) and Mode (bits 3-0). Default Fan: High, Mode: Cool
@@ -39,6 +42,9 @@ namespace esphome
             update_checksum(); // Calculate and set the checksum for the initial frame
         }
 
+        // POWER
+        // -----
+
         bool VoltasIRFrame::get_power() const
         {
             return (frame_[2] & 0b10000000) != 0; // Check if the power bit (bit 7) in Byte 2 is set
@@ -49,6 +55,23 @@ namespace esphome
             frame_[2] = (on ? 0b10000000 : 0b00000000); // Set the power state in Byte 2
             update_checksum();                          // Recalculate the checksum after changing the power state
         }
+
+        // TEMPERATURE
+        // -----------
+
+        uint8_t VoltasIRFrame::get_temperature() const
+        {
+            return frame_[3] & 0b00011111; // Extract the temperature value from Byte 3 (bits 4-0)
+        }
+
+        void VoltasIRFrame::set_temperature(uint8_t temperature)
+        {
+            frame_[3] = (frame_[3] & 0b11100000) | (temperature & 0b00011111); // Set the temperature value in Byte 3 (bits 4-0)
+            update_checksum();                                                 // Recalculate the checksum after changing the temperature
+        }
+
+        // CHECKSUM
+        // --------
 
         uint8_t VoltasIRFrame::calculate_checksum(const uint8_t *bytes) const
         {
