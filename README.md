@@ -95,12 +95,13 @@ esp32:
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/.esphome/**",
                 "~/.platformio/packages/toolchain-xtensa-esp32/**",
-                "~/.platformio/packages/toolchain-riscv32-esp/**"
+                "~/.platformio/packages/toolchain-riscv32-esp/**",
+                "~/.platformio/packages/framework-espidf/**"
             ],
-            "intelliSenseMode": "...",
+            "intelliSenseMode": "gcc-x64",
             "compilerPath": "...",
-            "cStandard": "c17",
-            "cppStandard": "c++17"
+            "cStandard": "c23",
+            "cppStandard": "c++23"
         }
     ],
     "version": 4
