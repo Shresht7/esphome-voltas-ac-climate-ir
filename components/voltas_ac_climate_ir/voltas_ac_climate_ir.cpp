@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "esphome/core/log.h"
 
 #include "voltas_ac_climate_ir.h"
@@ -21,12 +23,19 @@ namespace esphome
             return traits;
         }
 
+        // TRANSMIT
+        // --------
+
         void VoltasACClimateIR::transmit_state()
         {
             VoltasIRFrame frame;
 
             // Set the power state based on the current mode
             frame.set_power(this->mode != esphome::climate::CLIMATE_MODE_OFF);
+
+            // Set the temperature based on the current target temperature
+            uint8_t temperature = clamp_temperature(this->target_temperature);
+            frame.set_temperature(temperature);
 
             // Construct the IR Payload
             const uint8_t *payload = frame.payload();
@@ -41,6 +50,9 @@ namespace esphome
             frame.encode(transmit.get_data());
             transmit.perform();
         }
+
+        // RECEIVE
+        // -------
 
         bool VoltasACClimateIR::on_receive(remote_base::RemoteReceiveData data)
         {
@@ -57,7 +69,17 @@ namespace esphome
                      frame.payload()[0], frame.payload()[1], frame.payload()[2], frame.payload()[3], frame.payload()[4],
                      frame.payload()[5], frame.payload()[6], frame.payload()[7], frame.payload()[8], frame.payload()[9]);
 
+            // Update the climate state based on the received frame
             this->mode = frame.get_power() ? esphome::climate::CLIMATE_MODE_COOL : esphome::climate::CLIMATE_MODE_OFF;
+
+            // Update the target temperature based on the received frame
+            const uint8_t received_temperature = frame.get_temperature();
+            if (received_temperature < MIN_TEMPERATURE || received_temperature > MAX_TEMPERATURE)
+            {
+                ESP_LOGD(TAG, "Received temperature %d is out of range (%f - %f)", received_temperature, MIN_TEMPERATURE, MAX_TEMPERATURE);
+                return false; // Temperature out of range, return false to indicate unsuccessful reception
+            }
+            this->target_temperature = static_cast<float>(received_temperature);
 
             this->publish_state(); // Publish the updated state to Home Assistant
             return true;           // Indicate successful reception
