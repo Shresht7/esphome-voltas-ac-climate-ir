@@ -28,10 +28,18 @@ namespace esphome
             // Set the power state based on the current mode
             frame.set_power(this->mode != esphome::climate::CLIMATE_MODE_OFF);
 
+            // Construct the IR Payload
             const uint8_t *payload = frame.payload();
+
+            // Log the payload for debugging
             ESP_LOGD(TAG, "Transmitting IR Frame: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
                      payload[0], payload[1], payload[2], payload[3], payload[4],
                      payload[5], payload[6], payload[7], payload[8], payload[9]);
+
+            // Transmit the IR Payload
+            auto transmit = this->transmitter_->transmit();
+            frame.encode(transmit.get_data());
+            transmit.perform();
         }
 
     } // namespace voltas_ac_climate_ir
