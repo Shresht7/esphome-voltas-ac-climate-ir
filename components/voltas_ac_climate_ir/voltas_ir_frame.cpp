@@ -53,7 +53,7 @@ namespace esphome
         uint8_t VoltasIRFrame::calculate_checksum(const uint8_t *bytes) const
         {
             uint8_t checksum = 0;
-            for (uint8_t i = 0; i <= 8; i++)
+            for (uint8_t i = 0; i < 9; i++)
             {
                 checksum += bytes[i]; // Sum the first 9 bytes of the frame
             }
