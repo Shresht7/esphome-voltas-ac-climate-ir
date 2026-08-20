@@ -114,28 +114,56 @@ namespace esphome
         {
             uint8_t bytes[10] = {0}; // Temporary array to hold the decoded bytes
 
-            // LOG the received data for debugging
-            ESP_LOGD("voltas_ac_climate_ir", "Decoding received IR data with %d items", data->size());
-            for (uint32_t i = 0; i < data->size(); i++)
-            {
-                ESP_LOGD("voltas_ac_climate_ir", "Item %d: %d", i, (*data)[i]);
-            }
+            constexpr uint32_t TOLERANCE_PERCENT = 25;                                              // Allowable tolerance for timing variations in percentage
+            constexpr uint32_t MIN_SHORT = (100 - TOLERANCE_PERCENT) * DURATION_SPACE_SHORT / 100U; // Minimum duration for a short space
+            constexpr uint32_t MAX_SHORT = (100 + TOLERANCE_PERCENT) * DURATION_SPACE_SHORT / 100U; // Maximum duration for a short space
+            constexpr uint32_t MIN_LONG = (100 - TOLERANCE_PERCENT) * DURATION_SPACE_LONG / 100U;   // Minimum duration for a long space
+            constexpr uint32_t MAX_LONG = (100 + TOLERANCE_PERCENT) * DURATION_SPACE_LONG / 100U;   // Maximum duration for a long space
 
             for (uint8_t b = 0; b < FRAME_BYTES; b++)
             {
                 for (uint8_t mask = 0b10000000; mask; mask >>= 1)
                 {
-                    if (data->expect_item(DURATION_MARK, DURATION_SPACE_LONG))
+                    // Find the next mark, skipping past any leading noise
+                    while (data->is_valid() && !data->peek_mark(DURATION_MARK))
                     {
-                        bytes[b] |= mask; // Set the corresponding bit in the byte if a long space is detected
+                        data->advance(); // Skip invalid marks
                     }
-                    else if (data->expect_item(DURATION_MARK, DURATION_SPACE_SHORT))
+
+                    if (!data->is_valid())
                     {
-                        // Bit is 0; do nothing as the bit is already cleared
+                        return false; // Invalid frame: not enough data to decode
+                    }
+
+                    // Consume the mark
+                    data->advance();
+
+                    // Sum the gap (absolute durations) until the next mark to determine the space duration
+                    uint32_t space_duration = 0;
+                    while (data->is_valid() && !data->peek_mark(DURATION_MARK))
+                    {
+                        space_duration += abs(data->peek()); // Accumulate the space duration
+                        data->advance();                     // Move to the next timing
+                    }
+
+                    if (!data->is_valid())
+                    {
+                        return false; // Invalid frame: not enough data to decode
+                    }
+
+                    // Classify the space duration as a short or long space and set the corresponding bit in the byte
+                    if (space_duration >= MIN_SHORT && space_duration <= MAX_SHORT)
+                    {
+                        // Short space (bit 0), do nothing as the bit is already 0
+                    }
+                    else if (space_duration >= MIN_LONG && space_duration <= MAX_LONG)
+                    {
+                        // Long space (bit 1), set the corresponding bit in the byte
+                        bytes[b] |= mask;
                     }
                     else
                     {
-                        return false; // If neither a long nor short space is detected, decoding fails
+                        return false; // Invalid frame: space duration does not match expected short or long space
                     }
                 }
             }
