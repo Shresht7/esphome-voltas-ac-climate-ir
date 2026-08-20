@@ -30,6 +30,15 @@ namespace esphome
             // Method to set the power state (on/off)
             void set_power(bool on);
 
+            // Returns the current power state (on/off) from the frame
+            bool get_power() const;
+
+            // Method to set the temperature  (in Celsius)
+            void set_temperature(uint8_t temperature);
+
+            // Returns the current temperature (in Celsius) from the frame
+            uint8_t get_temperature() const;
+
             // Returns the IR Frame Payload (10 bytes - with the checksum computed)
             const uint8_t *payload() const;
 
@@ -38,9 +47,6 @@ namespace esphome
 
             // Decodes the received IR into the frame, validating the checksum and returning true if successful
             bool decode(remote_base::RemoteReceiveData *data);
-
-            // Returns the current power state (on/off) from the frame
-            bool get_power() const;
         };
 
     } // namespace voltas_ac_climate_ir
