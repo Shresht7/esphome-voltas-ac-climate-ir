@@ -44,6 +44,8 @@ To decipher the IR protocol for the AC Remote, we use an IR receiver to capture 
 
 The protocol reverse-engineering process is documented in [`protocol/analysis.ipynb`](protocol/analysis.ipynb).
 
+The final results are summarized in [`protocol/conclusion.md`](protocol/conclusion.md).
+
 See also the [`protocol/concepts.md`](protocol/concepts.md) file for some basic concepts and terminology related to IR protocols.
 
 ---
