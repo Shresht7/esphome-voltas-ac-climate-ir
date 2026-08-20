@@ -1,7 +1,7 @@
 #include "voltas_ir_frame.h"
 
-static constexpr uint32_t CARRIER_FREQUENCY = 38000;            // Carrier Frequency in Hz (38 kHz)
-static constexpr double TIMEBASE = 1000000 / CARRIER_FREQUENCY; // Timebase in microseconds (µs)
+static constexpr uint32_t CARRIER_FREQUENCY = 38000;              // Carrier Frequency in Hz (38 kHz)
+static constexpr double TIMEBASE = 1000000.0 / CARRIER_FREQUENCY; // Timebase in microseconds (µs)
 
 static constexpr uint32_t PRONTO_MARK = 40;        // Pronto mark duration in ticks
 static constexpr uint32_t PRONTO_SPACE_SHORT = 22; // Pronto short space duration in ticks
@@ -12,6 +12,11 @@ static constexpr uint32_t DURATION_MARK = PRONTO_MARK * TIMEBASE;               
 static constexpr uint32_t DURATION_SPACE_SHORT = PRONTO_SPACE_SHORT * TIMEBASE; // Duration of the short space in microseconds (µs)
 static constexpr uint32_t DURATION_SPACE_LONG = PRONTO_SPACE_LONG * TIMEBASE;   // Duration of the long space in microseconds (µs)
 static constexpr uint32_t DURATION_FOOTER = PRONTO_FOOTER * TIMEBASE;           // Duration of the footer (trailing space) in microseconds (µs)
+
+static constexpr uint8_t FRAME_BYTES = 10;                             // Number of bytes in the IR Payload Frame
+static constexpr uint16_t FRAME_BITS = FRAME_BYTES * 8;                // Number of bits in the IR Payload Frame
+static constexpr uint8_t FOOTER_SIZE = 1;                              // Footer size in bytes (mark + trailing space)
+static constexpr uint16_t FRAME_SIZE = 2 * (FRAME_BITS + FOOTER_SIZE); // Total number of mark/space pairs in the frame (2(80 + 1) = 2 * 81 = 162)
 
 namespace esphome
 {
@@ -56,6 +61,39 @@ namespace esphome
         {
             const_cast<VoltasIRFrame *>(this)->checksum(); // Ensure the checksum is up-to-date before returning the payload
             return frame_;                                 // Return the pointer to the frame array
+        }
+
+        void VoltasIRFrame::encode(remote_base::RemoteTransmitData *data) const
+        {
+            data->reset(); // Clear any existing data in the RemoteTransmitData object
+
+            data->set_carrier_frequency(CARRIER_FREQUENCY); // Set the carrier frequency for the IR transmission
+            data->reserve(FRAME_SIZE);                      // Reserve space for 81 mark/space pairs (80 bits + 1 footer)
+
+            // Construct the 10-byte payload with the checksum computed
+            const uint8_t *payload = this->payload();
+
+            // Iterate over each byte in the payload and encode it into mark/space pairs
+            for (uint8_t b = 0; b < FRAME_BYTES; b++)
+            {
+                // For each byte, iterate over its bits from MSB to LSB adding the corresponding mark and space durations to the data
+                for (uint8_t mask = 0x80; mask; mask >>= 1)
+                {
+                    data->mark(DURATION_MARK); // Add the constant mark duration
+
+                    if (payload[b] & mask)
+                    {
+                        data->space(DURATION_SPACE_LONG); // Add a long space for bit 1
+                    }
+                    else
+                    {
+                        data->space(DURATION_SPACE_SHORT); // Add a short space for bit 0
+                    }
+                }
+            }
+
+            // Footer: Final Mark and Trailing Space to end the frame
+            data->item(DURATION_MARK, DURATION_FOOTER);
         }
 
     } // namespace voltas_ac_climate_ir

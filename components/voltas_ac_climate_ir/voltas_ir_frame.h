@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include "esphome/components/climate/climate_mode.h"
+#include "esphome/components/remote_base/remote_base.h"
 
 namespace esphome
 {
@@ -27,6 +28,9 @@ namespace esphome
 
             // Returns the IR Frame Payload (10 bytes - with the checksum computed)
             const uint8_t *payload() const;
+
+            // Encodes the frame into IR signal timings (in microseconds) with PDM (constant mark + short/long space per bit) for transmission
+            void encode(remote_base::RemoteTransmitData *data) const;
         };
 
     } // namespace voltas_ac_climate_ir
