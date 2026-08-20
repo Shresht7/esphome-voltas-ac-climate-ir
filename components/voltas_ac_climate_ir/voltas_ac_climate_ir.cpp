@@ -41,6 +41,13 @@ namespace esphome
             uint8_t fan_speed = get_fan_speed_from_mode(this->fan_mode.value_or(esphome::climate::CLIMATE_FAN_AUTO));
             frame.set_fan_speed(fan_speed);
 
+            // Set the mode based on the current climate mode (only if not OFF)
+            if (this->mode != esphome::climate::CLIMATE_MODE_OFF)
+            {
+                uint8_t climate_mode = get_bits_from_climate_mode(this->mode);
+                frame.set_mode(climate_mode);
+            }
+
             // Construct the IR Payload
             const uint8_t *payload = frame.payload();
 
@@ -74,7 +81,16 @@ namespace esphome
                      frame.payload()[5], frame.payload()[6], frame.payload()[7], frame.payload()[8], frame.payload()[9]);
 
             // Update the climate state based on the received frame
-            this->mode = frame.get_power() ? esphome::climate::CLIMATE_MODE_COOL : esphome::climate::CLIMATE_MODE_OFF;
+            if (!frame.get_power())
+            {
+                this->mode = esphome::climate::CLIMATE_MODE_OFF; // If power is off, set mode to OFF
+            }
+            else
+            {
+                // If power is on, update the mode based on the received frame
+                uint8_t received_mode = frame.get_mode();
+                this->mode = get_climate_mode_from_bits(received_mode);
+            }
 
             // Update the target temperature based on the received frame
             const uint8_t received_temperature = frame.get_temperature();
