@@ -15,7 +15,7 @@ namespace esphome
         esphome::climate::ClimateTraits VoltasACClimateIR::traits()
         {
             // Get the base traits from ClimateIR
-            auto traits = esphome::climate::ClimateTraits();
+            auto traits = esphome::climate_ir::ClimateIR::traits();
 
             // Explicitly tell Home Assistant we ONLY support OFF and COOL
             traits.set_supported_modes({esphome::climate::CLIMATE_MODE_OFF, esphome::climate::CLIMATE_MODE_COOL});
