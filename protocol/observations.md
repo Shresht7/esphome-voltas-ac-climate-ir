@@ -68,7 +68,7 @@ Can use the [`Merge-ProntoCodes.ps1`](../scripts/Merge-ProntoCodes.ps1) script t
 ```
 ---
 
-## Priliminary Observations
+## Preliminary Observations
 
 - Count: 166 for every observation (with the exception of 26C -> 25C. misread?)
 - It looks like all codes begin with the same header `0000 006D 0051 0000` which is common for all codes.
@@ -108,3 +108,9 @@ All marks seem to be `002A`, `0028`, or `0029` (or similar). Spaces are either ~
 The last one is different from the others. It is `0180` instead of `0014` or `0060`. This is probably the end of the signal, and it is a longer duration to indicate the end of the transmission.
 
 Excluding the headers and the footer, there are 160 words (80 burst pairs) in each observation. Assuming the burst pair encodes a single bit, it would mean that each observation encodes 80 bits (10 bytes) of data.
+
+---
+
+## Analysis
+
+**Follow-up analysis:** These observations are analyzed in [`analysis.ipynb`](analysis.ipynb), which derives the frame structure, byte layout, and checksum.
