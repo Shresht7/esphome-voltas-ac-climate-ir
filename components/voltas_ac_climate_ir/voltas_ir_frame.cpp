@@ -50,15 +50,20 @@ namespace esphome
             update_checksum();                          // Recalculate the checksum after changing the power state
         }
 
-        uint8_t VoltasIRFrame::calculate_checksum() const
+        uint8_t VoltasIRFrame::calculate_checksum(const uint8_t *bytes) const
         {
             uint8_t checksum = 0;
             for (uint8_t i = 0; i <= 8; i++)
             {
-                checksum += frame_[i]; // Sum the first 9 bytes of the frame
+                checksum += bytes[i]; // Sum the first 9 bytes of the frame
             }
             // Get the one's complement of the sum
             return ~checksum;
+        }
+
+        uint8_t VoltasIRFrame::calculate_checksum() const
+        {
+            return calculate_checksum(frame_);
         }
 
         void VoltasIRFrame::update_checksum()
@@ -103,6 +108,49 @@ namespace esphome
 
             // Footer: Final Mark and Trailing Space to end the frame
             data->item(DURATION_MARK, DURATION_FOOTER);
+        }
+
+        bool VoltasIRFrame::decode(remote_base::RemoteReceiveData *data)
+        {
+            uint8_t bytes[10] = {0}; // Temporary array to hold the decoded bytes
+
+            for (uint8_t b = 0; b < FRAME_BYTES; b++)
+            {
+                for (uint8_t mask = 0x80; mask; mask >>= 1)
+                {
+                    if (data->expect_item(DURATION_MARK, DURATION_SPACE_LONG))
+                    {
+                        bytes[b] |= mask; // Set the corresponding bit in the byte if a long space is detected
+                    }
+                    else if (data->expect_item(DURATION_MARK, DURATION_SPACE_SHORT))
+                    {
+                        // Bit is 0; do nothing as the bit is already cleared
+                    }
+                    else if (!data->expect_item(DURATION_MARK, DURATION_SPACE_SHORT))
+                    {
+                        return false; // If neither a long nor short space is detected, decoding fails
+                    }
+                }
+            }
+
+            // Validate that the first byte is the expected constant (0b00110011)
+            if (bytes[0] != 0b00110011)
+            {
+                return false; // Invalid frame: first byte does not match the expected constant
+            }
+
+            // Validate the checksum by comparing the calculated checksum with the received checksum in byte 9
+            if (bytes[9] != calculate_checksum(bytes))
+            {
+                return false; // Invalid frame: checksum does not match
+            }
+
+            // If all validations pass, copy the decoded bytes into the frame
+            for (uint8_t i = 0; i < FRAME_BYTES; i++)
+            {
+                frame_[i] = bytes[i];
+            }
+            return true; // Decoding successful
         }
 
     } // namespace voltas_ac_climate_ir
