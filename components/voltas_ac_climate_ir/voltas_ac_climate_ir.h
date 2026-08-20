@@ -36,6 +36,9 @@ namespace esphome
 
             // Override the receive method - called whenever an IR frame is received
             bool on_receive(remote_base::RemoteReceiveData data) override;
+
+            // Clamp the temperature to the valid range and round to the nearest step
+            static uint8_t clamp_temperature(float temperature);
         };
 
     } // namespace voltas_ac_climate_ir

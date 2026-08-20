@@ -63,5 +63,18 @@ namespace esphome
             return true;           // Indicate successful reception
         }
 
+        // HELPERS
+        // -------
+
+        uint8_t VoltasACClimateIR::clamp_temperature(float temperature)
+        {
+            // Clamp the temperature to the valid range and round to the nearest step
+            if (temperature < MIN_TEMPERATURE)
+                return static_cast<uint8_t>(MIN_TEMPERATURE);
+            if (temperature > MAX_TEMPERATURE)
+                return static_cast<uint8_t>(MAX_TEMPERATURE);
+            return static_cast<uint8_t>(round(temperature / TEMPERATURE_STEP) * TEMPERATURE_STEP);
+        }
+
     } // namespace voltas_ac_climate_ir
 } // namespace esphome
