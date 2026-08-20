@@ -21,6 +21,15 @@ static constexpr bool SUPPORTS_DRY_MODE = true;
 // Supports Fan-Only Mode
 static constexpr bool SUPPORTS_FAN_ONLY = true;
 
+// Supported Climate Modes
+static constexpr auto SUPPORTED_MODES = {
+    esphome::climate::CLIMATE_MODE_OFF,
+    esphome::climate::CLIMATE_MODE_COOL,
+    esphome::climate::CLIMATE_MODE_DRY,
+    esphome::climate::CLIMATE_MODE_HEAT,
+    esphome::climate::CLIMATE_MODE_FAN_ONLY,
+};
+
 namespace esphome
 {
     namespace voltas_ac_climate_ir

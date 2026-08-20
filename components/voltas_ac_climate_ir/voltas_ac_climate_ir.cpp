@@ -18,7 +18,7 @@ namespace esphome
             auto traits = esphome::climate_ir::ClimateIR::traits();
 
             // Explicitly tell Home Assistant we ONLY support OFF and COOL
-            traits.set_supported_modes({esphome::climate::CLIMATE_MODE_OFF, esphome::climate::CLIMATE_MODE_COOL});
+            traits.set_supported_modes(SUPPORTED_MODES);
 
             return traits;
         }
