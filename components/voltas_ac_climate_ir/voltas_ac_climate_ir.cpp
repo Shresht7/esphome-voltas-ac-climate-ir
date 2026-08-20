@@ -142,5 +142,45 @@ namespace esphome
             }
         }
 
+        uint8_t VoltasACClimateIR::get_bits_from_climate_mode(esphome::climate::ClimateMode mode)
+        {
+            switch (mode)
+            {
+            case esphome::climate::CLIMATE_MODE_OFF:
+                return 0b0000;
+            case esphome::climate::CLIMATE_MODE_COOL:
+                return 0b1000;
+            case esphome::climate::CLIMATE_MODE_DRY:
+                return 0b0100;
+            case esphome::climate::CLIMATE_MODE_HEAT:
+                return 0b0010;
+            case esphome::climate::CLIMATE_MODE_FAN_ONLY:
+                return 0b0001;
+            default:
+                ESP_LOGW(TAG, "Unsupported climate mode: %d", static_cast<int>(mode));
+                return 0b1000; // Default to Cool if unsupported
+            }
+        }
+
+        esphome::climate::ClimateMode VoltasACClimateIR::get_climate_mode_from_bits(uint8_t mode)
+        {
+            switch (mode)
+            {
+            case 0b0000:
+                return esphome::climate::CLIMATE_MODE_OFF;
+            case 0b1000:
+                return esphome::climate::CLIMATE_MODE_COOL;
+            case 0b0100:
+                return esphome::climate::CLIMATE_MODE_DRY;
+            case 0b0010:
+                return esphome::climate::CLIMATE_MODE_HEAT;
+            case 0b0001:
+                return esphome::climate::CLIMATE_MODE_FAN_ONLY;
+            default:
+                ESP_LOGW(TAG, "Unsupported mode: %d", mode);
+                return esphome::climate::CLIMATE_MODE_COOL; // Default to Cool if unsupported
+            }
+        }
+
     } // namespace voltas_ac_climate_ir
 } // namespace esphome

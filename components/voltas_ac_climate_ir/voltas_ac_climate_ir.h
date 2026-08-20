@@ -59,6 +59,12 @@ namespace esphome
 
             // Helper function to get the fan mode from the fan speed
             static esphome::climate::ClimateFanMode get_fan_mode_from_speed(uint8_t fan_speed);
+
+            // Helper function to get the mode from the climate mode
+            static uint8_t get_bits_from_climate_mode(esphome::climate::ClimateMode mode);
+
+            // Helper function to get the climate mode from the mode
+            static esphome::climate::ClimateMode get_climate_mode_from_bits(uint8_t mode);
         };
 
     } // namespace voltas_ac_climate_ir
