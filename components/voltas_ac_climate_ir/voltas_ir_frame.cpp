@@ -126,7 +126,7 @@ namespace esphome
                     {
                         // Bit is 0; do nothing as the bit is already cleared
                     }
-                    else if (!data->expect_item(DURATION_MARK, DURATION_SPACE_SHORT))
+                    else
                     {
                         return false; // If neither a long nor short space is detected, decoding fails
                     }

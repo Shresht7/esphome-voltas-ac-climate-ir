@@ -46,10 +46,10 @@ namespace esphome
         {
             VoltasIRFrame frame; // Create a new frame to decode the received data
 
+            // Decode the received IR data into the frame
             if (!frame.decode(&data))
             {
-                ESP_LOGW(TAG, "Failed to decode received IR frame.");
-                return false;
+                return false; // Decoding failed, return false to indicate unsuccessful reception
             }
 
             this->mode = frame.get_power() ? esphome::climate::CLIMATE_MODE_COOL : esphome::climate::CLIMATE_MODE_OFF;
