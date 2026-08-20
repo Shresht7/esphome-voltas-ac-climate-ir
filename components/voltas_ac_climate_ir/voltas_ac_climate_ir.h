@@ -50,6 +50,12 @@ namespace esphome
 
             // Clamp the temperature to the valid range and round to the nearest step
             static uint8_t clamp_temperature(float temperature);
+
+            // Helper function to get the fan speed from the fan mode
+            static uint8_t get_fan_speed_from_mode(esphome::climate::ClimateFanMode fan_mode);
+
+            // Helper function to get the fan mode from the fan speed
+            static esphome::climate::ClimateFanMode get_fan_mode_from_speed(uint8_t fan_speed);
         };
 
     } // namespace voltas_ac_climate_ir
