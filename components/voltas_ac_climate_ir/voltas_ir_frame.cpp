@@ -114,6 +114,13 @@ namespace esphome
         {
             uint8_t bytes[10] = {0}; // Temporary array to hold the decoded bytes
 
+            // LOG the received data for debugging
+            ESP_LOGD("voltas_ac_climate_ir", "Decoding received IR data with %d items", data->size());
+            for (uint32_t i = 0; i < data->size(); i++)
+            {
+                ESP_LOGD("voltas_ac_climate_ir", "Item %d: %d", i, (*data)[i]);
+            }
+
             for (uint8_t b = 0; b < FRAME_BYTES; b++)
             {
                 for (uint8_t mask = 0b10000000; mask; mask >>= 1)
