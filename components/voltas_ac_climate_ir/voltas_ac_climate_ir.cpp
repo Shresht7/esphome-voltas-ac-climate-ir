@@ -65,9 +65,7 @@ namespace esphome
             const uint8_t *payload = frame.payload();
 
             // Log the payload for debugging
-            ESP_LOGD(TAG, "Transmitting IR Frame: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
-                     payload[0], payload[1], payload[2], payload[3], payload[4],
-                     payload[5], payload[6], payload[7], payload[8], payload[9]);
+            ESP_LOGD(TAG, "Transmitting IR Frame: %s", format_frame(payload).c_str());
 
             // Transmit the IR Payload
             auto transmit = this->transmitter_->transmit();
@@ -88,9 +86,7 @@ namespace esphome
                 return false; // Decoding failed, return false to indicate unsuccessful reception
             }
 
-            ESP_LOGD(TAG, "Received IR Frame: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
-                     frame.payload()[0], frame.payload()[1], frame.payload()[2], frame.payload()[3], frame.payload()[4],
-                     frame.payload()[5], frame.payload()[6], frame.payload()[7], frame.payload()[8], frame.payload()[9]);
+            ESP_LOGD(TAG, "Received IR Frame: %s", format_frame(frame.payload()).c_str());
 
             // Validate the target temperature before mutating any state, so a rejected frame leaves no partial updates behind
             const uint8_t received_temperature = frame.get_temperature();
@@ -288,6 +284,23 @@ namespace esphome
                 return esphome::climate::CLIMATE_PRESET_ECO;
             else
                 return esphome::climate::CLIMATE_PRESET_NONE;
+        }
+
+        // LOGGING
+        // -------
+
+        // Formats the frame payload as spaced hex pairs, e.g. "33 28 00 1C ..."
+        static std::string format_frame(const uint8_t *payload)
+        {
+            std::string out;
+            char buf[4];
+            for (uint8_t i = 0; i < FRAME_BYTES; i++)
+            {
+                str_snprintf(buf, sizeof(buf), "%02X ", payload[i]);
+                out += buf;
+            }
+            out.pop_back(); // Drop the trailing space
+            return out;
         }
 
     } // namespace voltas_ac_climate_ir
