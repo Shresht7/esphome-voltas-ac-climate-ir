@@ -13,16 +13,20 @@ external_components:
     components: [voltas_ac_climate_ir]
     refresh: 10s # Clear the cache for development. See https://esphome.io/components/external_components/#refresh
 
-climate:
-  - platform: voltas_ac_climate_ir
-    name: Voltas AC
-
 remote_transmitter:
-  pin: GPIO2
+  pin: 2
   carrier_duty_percent: 50% # 50% for IR LEDs
   id: ir_transmitter
 
 remote_receiver:
-  - pin: 25
-    dump: all
+  - pin:
+      number: 25
+      inverted: true
     id: ir_receiver
+
+climate:
+  - platform: voltas_ac_climate_ir
+    name: Voltas AC
+    receiver_id: ir_receiver
+    # sensor: sense_temperature
+    # humidity_sensor: sense_humidity
