@@ -117,6 +117,11 @@ namespace esphome
 
             // Helper function to get the preset from the turbo and eco-saver states
             static esphome::climate::ClimatePreset get_preset_from_bits(bool turbo, bool eco_saver);
+
+        private:
+            // Stored lamp state, mirrored from received frames and re-sent with every transmission.
+            // Not exposed to Home Assistant - the physical remote is the only way to toggle it.
+            bool lamp_state_{false};
         };
 
     } // namespace voltas_ac_climate_ir
