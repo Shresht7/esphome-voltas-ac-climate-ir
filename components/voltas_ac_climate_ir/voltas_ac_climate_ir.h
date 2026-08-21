@@ -99,29 +99,29 @@ namespace esphome
             // Clamp the temperature to the valid range and round to the nearest step
             static uint8_t clamp_temperature(float temperature);
 
-            // Helper function to get the fan speed from the fan mode
-            static uint8_t get_fan_speed_from_mode(esphome::climate::ClimateFanMode fan_mode);
+            // Helper function to encode the fan speed from the fan mode
+            static uint8_t encode_fan(esphome::climate::ClimateFanMode fan_mode);
 
-            // Helper function to get the fan mode from the fan speed
-            static esphome::climate::ClimateFanMode get_fan_mode_from_speed(uint8_t fan_speed);
+            // Helper function to decode the fan mode from the fan speed
+            static esphome::climate::ClimateFanMode decode_fan(uint8_t fan_speed);
 
-            // Helper function to get the mode from the climate mode
-            static uint8_t get_bits_from_climate_mode(esphome::climate::ClimateMode mode);
+            // Helper function to encode the mode bits from the climate mode
+            static uint8_t encode_mode(esphome::climate::ClimateMode mode);
 
-            // Helper function to get the climate mode from the mode
-            static esphome::climate::ClimateMode get_climate_mode_from_bits(uint8_t mode);
+            // Helper function to decode the climate mode from the mode bits
+            static esphome::climate::ClimateMode decode_mode(uint8_t bits);
 
-            // Helper function to get the vertical and horizontal swing states from the swing mode
-            static SwingBits get_swing_bits(esphome::climate::ClimateSwingMode swing_mode);
+            // Helper function to encode the swing states from the swing mode
+            static SwingBits encode_swing(esphome::climate::ClimateSwingMode swing_mode);
 
-            // Helper function to get swing mode from the vertical and horizontal swing states
-            static esphome::climate::ClimateSwingMode get_swing_mode_from_bits(bool vertical_swing, bool horizontal_swing);
+            // Helper function to decode the swing mode from the swing states
+            static esphome::climate::ClimateSwingMode decode_swing(bool vertical_swing, bool horizontal_swing);
 
-            // Helper function to get the turbo and eco-saver states from the preset
-            static PresetBits get_preset_bits(esphome::climate::ClimatePreset preset);
+            // Helper function to encode the turbo and eco-saver states from the preset
+            static PresetBits encode_preset(esphome::climate::ClimatePreset preset);
 
-            // Helper function to get the preset from the turbo and eco-saver states
-            static esphome::climate::ClimatePreset get_preset_from_bits(bool turbo, bool eco_saver);
+            // Helper function to decode the preset from the turbo and eco-saver states
+            static esphome::climate::ClimatePreset decode_preset(bool turbo, bool eco_saver);
         };
 
     } // namespace voltas_ac_climate_ir

@@ -38,23 +38,23 @@ namespace esphome
             frame.set_temperature(temperature);
 
             // Set the fan speed based on the current fan mode (defaulting to AUTO if not set)
-            uint8_t fan_speed = get_fan_speed_from_mode(this->fan_mode.value_or(esphome::climate::CLIMATE_FAN_AUTO));
+            uint8_t fan_speed = encode_fan(this->fan_mode.value_or(esphome::climate::CLIMATE_FAN_AUTO));
             frame.set_fan_speed(fan_speed);
 
             // Set the mode based on the current climate mode (only if not OFF)
             if (this->mode != esphome::climate::CLIMATE_MODE_OFF)
             {
-                uint8_t climate_mode = get_bits_from_climate_mode(this->mode);
+                uint8_t climate_mode = encode_mode(this->mode);
                 frame.set_mode(climate_mode);
             }
 
             // Set the vertical and horizontal swing states based on the current swing mode
-            const SwingBits swing_bits = get_swing_bits(this->swing_mode);
+            const SwingBits swing_bits = encode_swing(this->swing_mode);
             frame.set_vertical_swing(swing_bits.vertical);
             frame.set_horizontal_swing(swing_bits.horizontal);
 
             // Set the turbo and eco-saver states based on the current preset
-            const PresetBits preset = get_preset_bits(this->preset.value_or(esphome::climate::CLIMATE_PRESET_NONE));
+            const PresetBits preset = encode_preset(this->preset.value_or(esphome::climate::CLIMATE_PRESET_NONE));
             frame.set_turbo(preset.turbo);
             frame.set_eco_saver(preset.eco_saver);
 
@@ -110,7 +110,7 @@ namespace esphome
             {
                 // If power is on, update the mode based on the received frame
                 uint8_t received_mode = frame.get_mode();
-                this->mode = get_climate_mode_from_bits(received_mode);
+                this->mode = decode_mode(received_mode);
             }
 
             // Update the target temperature based on the received frame
@@ -118,17 +118,17 @@ namespace esphome
 
             // Update the fan mode based on the received frame (defaulting to AUTO if the received fan speed is unsupported)
             const uint8_t received_fan_speed = frame.get_fan_speed();
-            this->fan_mode = get_fan_mode_from_speed(received_fan_speed);
+            this->fan_mode = decode_fan(received_fan_speed);
 
             // Update the swing mode based on the received frame
             const bool received_vertical_swing = frame.get_vertical_swing();
             const bool received_horizontal_swing = frame.get_horizontal_swing();
-            this->swing_mode = get_swing_mode_from_bits(received_vertical_swing, received_horizontal_swing);
+            this->swing_mode = decode_swing(received_vertical_swing, received_horizontal_swing);
 
             // Update the preset based on the received frame
             const bool received_turbo = frame.get_turbo();
             const bool received_eco_saver = frame.get_eco_saver();
-            this->preset = get_preset_from_bits(received_turbo, received_eco_saver);
+            this->preset = decode_preset(received_turbo, received_eco_saver);
 
             // Store the lamp state so subsequent transmissions preserve it
             this->lamp_state_ = frame.get_lamp();
@@ -150,7 +150,7 @@ namespace esphome
             return static_cast<uint8_t>(round(temperature / TEMPERATURE_STEP) * TEMPERATURE_STEP);
         }
 
-        uint8_t VoltasACClimateIR::get_fan_speed_from_mode(esphome::climate::ClimateFanMode fan_mode)
+        uint8_t VoltasACClimateIR::encode_fan(esphome::climate::ClimateFanMode fan_mode)
         {
             switch (fan_mode)
             {
@@ -168,7 +168,7 @@ namespace esphome
             }
         }
 
-        esphome::climate::ClimateFanMode VoltasACClimateIR::get_fan_mode_from_speed(uint8_t fan_speed)
+        esphome::climate::ClimateFanMode VoltasACClimateIR::decode_fan(uint8_t fan_speed)
         {
             switch (fan_speed)
             {
@@ -186,7 +186,7 @@ namespace esphome
             }
         }
 
-        uint8_t VoltasACClimateIR::get_bits_from_climate_mode(esphome::climate::ClimateMode mode)
+        uint8_t VoltasACClimateIR::encode_mode(esphome::climate::ClimateMode mode)
         {
             switch (mode)
             {
@@ -206,9 +206,9 @@ namespace esphome
             }
         }
 
-        esphome::climate::ClimateMode VoltasACClimateIR::get_climate_mode_from_bits(uint8_t mode)
+        esphome::climate::ClimateMode VoltasACClimateIR::decode_mode(uint8_t bits)
         {
-            switch (mode)
+            switch (bits)
             {
             case 0b0000:
                 return esphome::climate::CLIMATE_MODE_OFF;
@@ -221,12 +221,12 @@ namespace esphome
             case 0b0001:
                 return esphome::climate::CLIMATE_MODE_FAN_ONLY;
             default:
-                ESP_LOGW(TAG, "Unsupported mode: %d", mode);
+                ESP_LOGW(TAG, "Unsupported mode bits: %d", bits);
                 return esphome::climate::CLIMATE_MODE_COOL; // Default to Cool if unsupported
             }
         }
 
-        SwingBits VoltasACClimateIR::get_swing_bits(esphome::climate::ClimateSwingMode swing_mode)
+        SwingBits VoltasACClimateIR::encode_swing(esphome::climate::ClimateSwingMode swing_mode)
         {
             switch (swing_mode)
             {
@@ -244,7 +244,7 @@ namespace esphome
             }
         }
 
-        esphome::climate::ClimateSwingMode VoltasACClimateIR::get_swing_mode_from_bits(bool vertical_swing, bool horizontal_swing)
+        esphome::climate::ClimateSwingMode VoltasACClimateIR::decode_swing(bool vertical_swing, bool horizontal_swing)
         {
             if (vertical_swing && horizontal_swing)
                 return esphome::climate::CLIMATE_SWING_BOTH;
@@ -256,7 +256,7 @@ namespace esphome
                 return esphome::climate::CLIMATE_SWING_OFF;
         }
 
-        PresetBits VoltasACClimateIR::get_preset_bits(esphome::climate::ClimatePreset preset)
+        PresetBits VoltasACClimateIR::encode_preset(esphome::climate::ClimatePreset preset)
         {
             switch (preset)
             {
@@ -272,7 +272,7 @@ namespace esphome
             }
         }
 
-        esphome::climate::ClimatePreset VoltasACClimateIR::get_preset_from_bits(bool turbo, bool eco_saver)
+        esphome::climate::ClimatePreset VoltasACClimateIR::decode_preset(bool turbo, bool eco_saver)
         {
             if (turbo)
                 return esphome::climate::CLIMATE_PRESET_BOOST; // Turbo takes precedence over Eco-saver
