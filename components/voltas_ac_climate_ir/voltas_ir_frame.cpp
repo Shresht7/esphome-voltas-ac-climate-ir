@@ -137,6 +137,20 @@ namespace esphome
             update_checksum();                                                     // Recalculate the checksum after changing the turbo state
         }
 
+        // ECO-SAVER
+        // ---------
+
+        bool VoltasIRFrame::get_eco_saver() const
+        {
+            return (frame_[3] & 0b01000000) != 0; // Check if the eco-saver bit (bit 6) in Byte 3 is set
+        }
+
+        void VoltasIRFrame::set_eco_saver(bool on)
+        {
+            frame_[3] = (frame_[3] & 0b10111111) | (on ? 0b01000000 : 0b00000000); // Set the eco-saver bit in Byte 3 (bit 6)
+            update_checksum();                                                     // Recalculate the checksum after changing the eco-saver state
+        }
+
         // CHECKSUM
         // --------
 

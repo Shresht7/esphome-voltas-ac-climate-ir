@@ -93,6 +93,15 @@ namespace esphome
             // Returns the current turbo mode state from the frame
             bool get_turbo() const;
 
+            // ECO-SAVER
+            // ---------
+
+            // Method to set the eco-saver mode state
+            void set_eco_saver(bool on);
+
+            // Returns the current eco-saver mode state from the frame
+            bool get_eco_saver() const;
+
             // PAYLOAD ENCODER / DECODER
             // -------------------------
 
