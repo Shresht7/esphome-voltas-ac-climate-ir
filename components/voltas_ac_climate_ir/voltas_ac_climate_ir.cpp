@@ -132,6 +132,15 @@ namespace esphome
             // Store the lamp state so subsequent transmissions preserve it
             this->lamp_state_ = frame.get_lamp();
 
+            // Echo the applied state in human-readable form for easy verification against remote presses
+            ESP_LOGI(TAG, "Applied remote state: mode=%s temp=%.0f fan=%s swing=%s preset=%s lamp=%s",
+                     LOG_STR_ARG(esphome::climate::climate_mode_to_string(this->mode)),
+                     this->target_temperature,
+                     LOG_STR_ARG(esphome::climate::climate_fan_mode_to_string(*this->fan_mode)),
+                     LOG_STR_ARG(esphome::climate::climate_swing_mode_to_string(this->swing_mode)),
+                     LOG_STR_ARG(esphome::climate::climate_preset_to_string(*this->preset)),
+                     this->lamp_state_ ? "on" : "off");
+
             this->publish_state(); // Publish the updated state to Home Assistant
             return true;           // Indicate successful reception
         }
