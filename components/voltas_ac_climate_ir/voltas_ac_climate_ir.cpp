@@ -238,7 +238,7 @@ namespace esphome
             }
         }
 
-        esphome::climate::ClimateSwingMode VoltasACClimateIR::get_swing_mode_from_bits(uint8_t vertical_swing, uint8_t horizontal_swing)
+        esphome::climate::ClimateSwingMode VoltasACClimateIR::get_swing_mode_from_bits(bool vertical_swing, bool horizontal_swing)
         {
             if (vertical_swing && horizontal_swing)
                 return esphome::climate::CLIMATE_SWING_BOTH;

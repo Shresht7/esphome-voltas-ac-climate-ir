@@ -110,7 +110,7 @@ namespace esphome
             static SwingBits get_swing_bits(esphome::climate::ClimateSwingMode swing_mode);
 
             // Helper function to get swing mode from the vertical and horizontal swing states
-            static esphome::climate::ClimateSwingMode get_swing_mode_from_bits(uint8_t vertical_swing, uint8_t horizontal_swing);
+            static esphome::climate::ClimateSwingMode get_swing_mode_from_bits(bool vertical_swing, bool horizontal_swing);
 
             // Helper function to get the turbo and eco-saver states from the preset
             static PresetBits get_preset_bits(esphome::climate::ClimatePreset preset);
