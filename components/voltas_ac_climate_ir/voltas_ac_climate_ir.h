@@ -45,6 +45,13 @@ static constexpr auto SUPPORTED_PRESETS = {
     esphome::climate::CLIMATE_PRESET_BOOST,
 };
 
+// Preset-to-frame bit mapping
+struct PresetBits
+{
+    bool turbo;     // Turbo mode state
+    bool eco_saver; // Eco-saver mode state
+};
+
 namespace esphome
 {
     namespace voltas_ac_climate_ir
@@ -101,11 +108,8 @@ namespace esphome
             // Helper function to get swing mode from the vertical and horizontal swing states
             static esphome::climate::ClimateSwingMode get_swing_mode_from_bits(uint8_t vertical_swing, uint8_t horizontal_swing);
 
-            // Helper function to get the turbo state from the preset
-            static bool get_turbo_from_preset(esphome::climate::ClimatePreset preset);
-
-            // Helper function to get the eco saver state from the preset
-            static bool get_eco_saver_from_preset(esphome::climate::ClimatePreset preset);
+            // Helper function to get the turbo and eco-saver states from the preset
+            static PresetBits get_preset_bits(esphome::climate::ClimatePreset preset);
 
             // Helper function to get the preset from the turbo and eco-saver states
             static esphome::climate::ClimatePreset get_preset_from_bits(bool turbo, bool eco_saver);

@@ -54,9 +54,10 @@ namespace esphome
             frame.set_vertical_swing(vertical_swing);
             frame.set_horizontal_swing(horizontal_swing);
 
-            // Set the turbo state based on the current preset
-            bool turbo = get_turbo_from_preset(this->preset.value_or(esphome::climate::CLIMATE_PRESET_NONE));
-            frame.set_turbo(turbo);
+            // Set the turbo and eco-saver states based on the current preset
+            const PresetBits preset = get_preset_bits(this->preset.value_or(esphome::climate::CLIMATE_PRESET_NONE));
+            frame.set_turbo(preset.turbo);
+            frame.set_eco_saver(preset.eco_saver);
 
             // Construct the IR Payload
             const uint8_t *payload = frame.payload();
@@ -260,31 +261,19 @@ namespace esphome
                 return esphome::climate::CLIMATE_SWING_OFF;
         }
 
-        bool VoltasACClimateIR::get_turbo_from_preset(esphome::climate::ClimatePreset preset)
+        PresetBits VoltasACClimateIR::get_preset_bits(esphome::climate::ClimatePreset preset)
         {
             switch (preset)
             {
             case esphome::climate::CLIMATE_PRESET_BOOST:
-                return true; // Turbo is enabled
-            case esphome::climate::CLIMATE_PRESET_NONE:
-                return false; // Turbo is disabled
-            default:
-                ESP_LOGW(TAG, "Unsupported preset: %d", static_cast<int>(preset));
-                return false; // Default to disabled if unsupported
-            }
-        }
-
-        bool VoltasACClimateIR::get_eco_saver_from_preset(esphome::climate::ClimatePreset preset)
-        {
-            switch (preset)
-            {
+                return {true, false}; // Turbo is enabled, eco-saver is disabled
             case esphome::climate::CLIMATE_PRESET_ECO:
-                return true; // Eco-saver is enabled
+                return {false, true}; // Eco-saver is enabled, turbo is disabled
             case esphome::climate::CLIMATE_PRESET_NONE:
-                return false; // Eco-saver is disabled
+                return {false, false}; // Turbo and eco-saver are disabled
             default:
                 ESP_LOGW(TAG, "Unsupported preset: %d", static_cast<int>(preset));
-                return false; // Default to disabled if unsupported
+                return {false, false}; // Default to disabled if unsupported
             }
         }
 
