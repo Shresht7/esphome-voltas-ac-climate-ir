@@ -251,5 +251,24 @@ namespace esphome
                 return esphome::climate::CLIMATE_SWING_OFF;
         }
 
+        bool VoltasACClimateIR::get_turbo_from_preset(esphome::climate::ClimatePreset preset)
+        {
+            switch (preset)
+            {
+            case esphome::climate::CLIMATE_PRESET_BOOST:
+                return true; // Turbo is enabled
+            case esphome::climate::CLIMATE_PRESET_NONE:
+                return false; // Turbo is disabled
+            default:
+                ESP_LOGW(TAG, "Unsupported preset: %d", static_cast<int>(preset));
+                return false; // Default to disabled if unsupported
+            }
+        }
+
+        esphome::climate::ClimatePreset VoltasACClimateIR::get_preset_from_turbo(bool turbo)
+        {
+            return turbo ? esphome::climate::CLIMATE_PRESET_BOOST : esphome::climate::CLIMATE_PRESET_NONE;
+        }
+
     } // namespace voltas_ac_climate_ir
 } // namespace esphome

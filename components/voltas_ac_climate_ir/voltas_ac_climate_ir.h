@@ -99,6 +99,12 @@ namespace esphome
 
             // Helper function to get swing mode from the vertical and horizontal swing states
             static esphome::climate::ClimateSwingMode get_swing_mode_from_bits(uint8_t vertical_swing, uint8_t horizontal_swing);
+
+            // Helper function to get the turbo state from the preset
+            static bool get_turbo_from_preset(esphome::climate::ClimatePreset preset);
+
+            // Helper function to get the preset from the turbo state
+            static esphome::climate::ClimatePreset get_preset_from_turbo(bool turbo);
         };
 
     } // namespace voltas_ac_climate_ir
