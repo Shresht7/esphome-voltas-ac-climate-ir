@@ -67,12 +67,6 @@ namespace esphome
         // Inherit from ClimateIR
         class VoltasACClimateIR : public esphome::climate_ir::ClimateIR
         {
-
-        private:
-            // Stored lamp state, mirrored from received frames and re-sent with every transmission.
-            // Not exposed to Home Assistant yet; the physical remote is the only way to toggle it.
-            bool lamp_state_{false};
-
         public:
             // The constructor configures the capabilities shown in Home Assistant, such as supported modes, temperature range, etc.
             VoltasACClimateIR() : esphome::climate_ir::ClimateIR(
@@ -91,11 +85,16 @@ namespace esphome
             // Override traits to specify the capabilities of this climate controller
             esphome::climate::ClimateTraits traits() override;
 
-            // Override the transmit method - called wheneer Home Assistant changes a setting
+            // Override the transmit method - called whenever Home Assistant changes a setting
             void transmit_state() override;
 
             // Override the receive method - called whenever an IR frame is received
             bool on_receive(remote_base::RemoteReceiveData data) override;
+
+        private:
+            // Stored lamp state, mirrored from received frames and re-sent with every transmission.
+            // Not exposed to Home Assistant yet; the physical remote is the only way to toggle it.
+            bool lamp_state_{false};
 
             // Clamp the temperature to the valid range and round to the nearest step
             static uint8_t clamp_temperature(float temperature);
