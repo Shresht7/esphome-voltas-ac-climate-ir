@@ -41,6 +41,7 @@ static constexpr auto SUPPORTED_SWING_MODES = {
 // Supported Presets
 static constexpr auto SUPPORTED_PRESETS = {
     esphome::climate::CLIMATE_PRESET_NONE,
+    esphome::climate::CLIMATE_PRESET_ECO,
     esphome::climate::CLIMATE_PRESET_BOOST,
 };
 
