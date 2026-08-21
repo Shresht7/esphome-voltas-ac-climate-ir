@@ -122,7 +122,8 @@ namespace esphome
 
             // Update the preset based on the received frame
             const bool received_turbo = frame.get_turbo();
-            this->preset = get_preset_from_turbo(received_turbo);
+            const bool received_eco_saver = frame.get_eco_saver();
+            this->preset = get_preset_from_bits(received_turbo, received_eco_saver);
 
             this->publish_state(); // Publish the updated state to Home Assistant
             return true;           // Indicate successful reception
@@ -273,9 +274,28 @@ namespace esphome
             }
         }
 
-        esphome::climate::ClimatePreset VoltasACClimateIR::get_preset_from_turbo(bool turbo)
+        bool VoltasACClimateIR::get_eco_saver_from_preset(esphome::climate::ClimatePreset preset)
         {
-            return turbo ? esphome::climate::CLIMATE_PRESET_BOOST : esphome::climate::CLIMATE_PRESET_NONE;
+            switch (preset)
+            {
+            case esphome::climate::CLIMATE_PRESET_ECO:
+                return true; // Eco-saver is enabled
+            case esphome::climate::CLIMATE_PRESET_NONE:
+                return false; // Eco-saver is disabled
+            default:
+                ESP_LOGW(TAG, "Unsupported preset: %d", static_cast<int>(preset));
+                return false; // Default to disabled if unsupported
+            }
+        }
+
+        esphome::climate::ClimatePreset VoltasACClimateIR::get_preset_from_bits(bool turbo, bool eco_saver)
+        {
+            if (turbo)
+                return esphome::climate::CLIMATE_PRESET_BOOST; // Turbo takes precedence over Eco-saver
+            else if (eco_saver)
+                return esphome::climate::CLIMATE_PRESET_ECO;
+            else
+                return esphome::climate::CLIMATE_PRESET_NONE;
         }
 
     } // namespace voltas_ac_climate_ir

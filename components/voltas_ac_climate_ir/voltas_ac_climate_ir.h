@@ -104,8 +104,11 @@ namespace esphome
             // Helper function to get the turbo state from the preset
             static bool get_turbo_from_preset(esphome::climate::ClimatePreset preset);
 
-            // Helper function to get the preset from the turbo state
-            static esphome::climate::ClimatePreset get_preset_from_turbo(bool turbo);
+            // Helper function to get the eco saver state from the preset
+            static bool get_eco_saver_from_preset(esphome::climate::ClimatePreset preset);
+
+            // Helper function to get the preset from the turbo and eco-saver states
+            static esphome::climate::ClimatePreset get_preset_from_bits(bool turbo, bool eco_saver);
         };
 
     } // namespace voltas_ac_climate_ir
