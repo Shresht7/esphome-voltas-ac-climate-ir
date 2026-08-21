@@ -30,6 +30,14 @@ static constexpr auto SUPPORTED_MODES = {
     esphome::climate::CLIMATE_MODE_FAN_ONLY,
 };
 
+// Supported Swing Modes
+static constexpr auto SUPPORTED_SWING_MODES = {
+    esphome::climate::CLIMATE_SWING_OFF,
+    esphome::climate::CLIMATE_SWING_VERTICAL,
+    esphome::climate::CLIMATE_SWING_HORIZONTAL,
+    esphome::climate::CLIMATE_SWING_BOTH,
+};
+
 namespace esphome
 {
     namespace voltas_ac_climate_ir
@@ -41,12 +49,13 @@ namespace esphome
         public:
             // The constructor configures the capabilities shown in Home Assistant, such as supported modes, temperature range, etc.
             VoltasACClimateIR() : esphome::climate_ir::ClimateIR(
-                                      MIN_TEMPERATURE,   // Minimum Temperature
-                                      MAX_TEMPERATURE,   // Maximum Temperature
-                                      TEMPERATURE_STEP,  // Temperature Step
-                                      SUPPORTS_DRY_MODE, // Supports Dry Mode
-                                      SUPPORTS_FAN_ONLY, // Supports Fan Only Mode
-                                      FAN_SPEEDS         // Supported Fan Speeds
+                                      MIN_TEMPERATURE,      // Minimum Temperature
+                                      MAX_TEMPERATURE,      // Maximum Temperature
+                                      TEMPERATURE_STEP,     // Temperature Step
+                                      SUPPORTS_DRY_MODE,    // Supports Dry Mode
+                                      SUPPORTS_FAN_ONLY,    // Supports Fan Only Mode
+                                      FAN_SPEEDS,           // Supported Fan Speeds
+                                      SUPPORTED_SWING_MODES // Supported Swing Modes
                                   )
             {
             }
