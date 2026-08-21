@@ -48,11 +48,10 @@ namespace esphome
                 frame.set_mode(climate_mode);
             }
 
-            // Set the swing modes
-            bool vertical_swing = get_vertical_swing_from_mode(this->swing_mode);
-            bool horizontal_swing = get_horizontal_swing_from_mode(this->swing_mode);
-            frame.set_vertical_swing(vertical_swing);
-            frame.set_horizontal_swing(horizontal_swing);
+            // Set the vertical and horizontal swing states based on the current swing mode
+            const SwingBits swing_bits = get_swing_bits(this->swing_mode);
+            frame.set_vertical_swing(swing_bits.vertical);
+            frame.set_horizontal_swing(swing_bits.horizontal);
 
             // Set the turbo and eco-saver states based on the current preset
             const PresetBits preset = get_preset_bits(this->preset.value_or(esphome::climate::CLIMATE_PRESET_NONE));
@@ -219,33 +218,21 @@ namespace esphome
             }
         }
 
-        bool VoltasACClimateIR::get_vertical_swing_from_mode(esphome::climate::ClimateSwingMode swing_mode)
+        SwingBits VoltasACClimateIR::get_swing_bits(esphome::climate::ClimateSwingMode swing_mode)
         {
             switch (swing_mode)
             {
+            case esphome::climate::CLIMATE_SWING_BOTH:
+                return {true, true}; // Both swings are enabled
             case esphome::climate::CLIMATE_SWING_VERTICAL:
-            case esphome::climate::CLIMATE_SWING_BOTH:
-                return true; // Vertical swing is enabled
-            case esphome::climate::CLIMATE_SWING_OFF:
-                return false; // Vertical swing is disabled
-            default:
-                ESP_LOGW(TAG, "Unsupported swing mode: %d", static_cast<int>(swing_mode));
-                return false; // Default to disabled if unsupported
-            }
-        }
-
-        bool VoltasACClimateIR::get_horizontal_swing_from_mode(esphome::climate::ClimateSwingMode swing_mode)
-        {
-            switch (swing_mode)
-            {
+                return {true, false}; // Only vertical swing is enabled
             case esphome::climate::CLIMATE_SWING_HORIZONTAL:
-            case esphome::climate::CLIMATE_SWING_BOTH:
-                return true; // Horizontal swing is enabled
+                return {false, true}; // Only horizontal swing is enabled
             case esphome::climate::CLIMATE_SWING_OFF:
-                return false; // Horizontal swing is disabled
+                return {false, false}; // Both swings are disabled
             default:
                 ESP_LOGW(TAG, "Unsupported swing mode: %d", static_cast<int>(swing_mode));
-                return false; // Default to disabled if unsupported
+                return {false, false}; // Default to disabled if unsupported
             }
         }
 
