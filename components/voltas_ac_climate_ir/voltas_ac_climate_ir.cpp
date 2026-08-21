@@ -48,6 +48,12 @@ namespace esphome
                 frame.set_mode(climate_mode);
             }
 
+            // Set the swing modes
+            bool vertical_swing = get_vertical_swing_from_mode(this->swing_mode);
+            bool horizontal_swing = get_horizontal_swing_from_mode(this->swing_mode);
+            frame.set_vertical_swing(vertical_swing);
+            frame.set_horizontal_swing(horizontal_swing);
+
             // Construct the IR Payload
             const uint8_t *payload = frame.payload();
 
@@ -104,6 +110,11 @@ namespace esphome
             // Update the fan mode based on the received frame (defaulting to AUTO if the received fan speed is unsupported)
             const uint8_t received_fan_speed = frame.get_fan_speed();
             this->fan_mode = get_fan_mode_from_speed(received_fan_speed);
+
+            // Update the swing mode based on the received frame
+            const bool received_vertical_swing = frame.get_vertical_swing();
+            const bool received_horizontal_swing = frame.get_horizontal_swing();
+            this->swing_mode = get_swing_mode_from_bits(received_vertical_swing, received_horizontal_swing);
 
             this->publish_state(); // Publish the updated state to Home Assistant
             return true;           // Indicate successful reception
