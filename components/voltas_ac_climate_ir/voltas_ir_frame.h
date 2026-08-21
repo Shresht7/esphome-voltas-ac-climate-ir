@@ -69,6 +69,21 @@ namespace esphome
             // Returns the current mode from the frame
             uint8_t get_mode() const;
 
+            // SWING
+            // -----
+
+            // Method to set the vertical swing state
+            void set_vertical_swing(bool on);
+
+            // Returns the current vertical swing state from the frame
+            bool get_vertical_swing() const;
+
+            // Method to set the horizontal swing state
+            void set_horizontal_swing(bool on);
+
+            // Returns the current horizontal swing state from the frame
+            bool get_horizontal_swing() const;
+
             // PAYLOAD ENCODER / DECODER
             // -------------------------
 
