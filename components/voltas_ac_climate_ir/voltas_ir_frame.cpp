@@ -1,3 +1,5 @@
+#include "esphome/core/log.h"
+
 #include "voltas_ir_frame.h"
 
 static constexpr uint32_t CARRIER_FREQUENCY = 38000;              // Carrier Frequency in Hz (38 kHz)
@@ -22,6 +24,8 @@ namespace esphome
 {
     namespace voltas_ac_climate_ir
     {
+
+        static const char *TAG = "voltas_ac_climate_ir.frame";
 
         // CONSTRUCTOR
         // -----------
@@ -260,6 +264,7 @@ namespace esphome
 
                     if (!data->is_valid())
                     {
+                        ESP_LOGD(TAG, "Invalid frame: ran out of receive data");
                         return false; // Invalid frame: not enough data to decode
                     }
 
@@ -276,6 +281,7 @@ namespace esphome
 
                     if (!data->is_valid())
                     {
+                        ESP_LOGD(TAG, "Invalid frame: ran out of receive data");
                         return false; // Invalid frame: not enough data to decode
                     }
 
@@ -291,6 +297,7 @@ namespace esphome
                     }
                     else
                     {
+                        ESP_LOGD(TAG, "Invalid frame: unrecognized space timing (%u us)", space_duration);
                         return false; // Invalid frame: space duration does not match expected short or long space
                     }
                 }
@@ -299,12 +306,14 @@ namespace esphome
             // Validate that the first byte is the expected constant (0b00110011)
             if (bytes[0] != 0b00110011)
             {
+                ESP_LOGD(TAG, "Invalid frame: bad signature byte (%02X)", bytes[0]);
                 return false; // Invalid frame: first byte does not match the expected constant
             }
 
             // Validate the checksum by comparing the calculated checksum with the received checksum in byte 9
             if (bytes[9] != calculate_checksum(bytes))
             {
+                ESP_LOGD(TAG, "Invalid frame: checksum mismatch (received %02X, calculated %02X)", bytes[9], calculate_checksum(bytes));
                 return false; // Invalid frame: checksum does not match
             }
 
