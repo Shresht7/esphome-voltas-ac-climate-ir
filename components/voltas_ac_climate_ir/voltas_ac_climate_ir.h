@@ -122,6 +122,9 @@ namespace esphome
 
             // Helper function to decode the preset from the turbo and eco-saver states
             static esphome::climate::ClimatePreset decode_preset(bool turbo, bool eco_saver);
+
+            // Builds the human-readable state summary shared by transmit/receive logging
+            std::string format_state() const;
         };
 
     } // namespace voltas_ac_climate_ir

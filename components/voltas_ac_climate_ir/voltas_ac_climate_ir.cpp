@@ -61,6 +61,9 @@ namespace esphome
             // Set the lamp state (preserved across transmissions; toggled via the physical remote)
             frame.set_lamp(this->lamp_state_);
 
+            // Echo the transmitted state in human-readable form, mirroring the receive-side summary
+            ESP_LOGI(TAG, "Transmitting state: %s", format_state().c_str());
+
             // Construct the IR Payload
             const uint8_t *payload = frame.payload();
 
@@ -129,13 +132,7 @@ namespace esphome
             this->lamp_state_ = frame.get_lamp();
 
             // Echo the applied state in human-readable form for easy verification against remote presses
-            ESP_LOGI(TAG, "Applied remote state: mode=%s temp=%.0f fan=%s swing=%s preset=%s lamp=%s",
-                     LOG_STR_ARG(esphome::climate::climate_mode_to_string(this->mode)),
-                     this->target_temperature,
-                     LOG_STR_ARG(esphome::climate::climate_fan_mode_to_string(*this->fan_mode)),
-                     LOG_STR_ARG(esphome::climate::climate_swing_mode_to_string(this->swing_mode)),
-                     LOG_STR_ARG(esphome::climate::climate_preset_to_string(*this->preset)),
-                     this->lamp_state_ ? "on" : "off");
+            ESP_LOGI(TAG, "Applied remote state: %s", format_state().c_str());
 
             this->publish_state(); // Publish the updated state to Home Assistant
             return true;           // Indicate successful reception
@@ -288,6 +285,21 @@ namespace esphome
 
         // LOGGING
         // -------
+
+        // Builds the human-readable state summary shared by transmit/receive logging
+        std::string VoltasACClimateIR::format_state() const
+        {
+            char buf[96];
+            str_snprintf(buf, sizeof(buf),
+                         "mode=%s temp=%.0f fan=%s swing=%s preset=%s lamp=%s",
+                         LOG_STR_ARG(esphome::climate::climate_mode_to_string(this->mode)),
+                         static_cast<float>(clamp_temperature(this->target_temperature)), // Show what would actually be sent
+                         LOG_STR_ARG(esphome::climate::climate_fan_mode_to_string(this->fan_mode.value_or(esphome::climate::CLIMATE_FAN_AUTO))),
+                         LOG_STR_ARG(esphome::climate::climate_swing_mode_to_string(this->swing_mode)),
+                         LOG_STR_ARG(esphome::climate::climate_preset_to_string(this->preset.value_or(esphome::climate::CLIMATE_PRESET_NONE))),
+                         this->lamp_state_ ? "on" : "off");
+            return buf;
+        }
 
         // Formats the frame payload as spaced hex pairs, e.g. "33 28 00 1C ..."
         static std::string format_frame(const uint8_t *payload)
