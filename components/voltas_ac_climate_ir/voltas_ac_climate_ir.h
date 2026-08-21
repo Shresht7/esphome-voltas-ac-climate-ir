@@ -83,6 +83,15 @@ namespace esphome
 
             // Helper function to get the climate mode from the mode
             static esphome::climate::ClimateMode get_climate_mode_from_bits(uint8_t mode);
+
+            // Helper function to get the vertical swing state from the swing mode
+            static bool get_vertical_swing_from_mode(esphome::climate::ClimateSwingMode swing_mode);
+
+            // Helper function to get the horizontal swing state from the swing mode
+            static bool get_horizontal_swing_from_mode(esphome::climate::ClimateSwingMode swing_mode);
+
+            // Helper function to get swing mode from the vertical and horizontal swing states
+            static esphome::climate::ClimateSwingMode get_swing_mode_from_bits(uint8_t vertical_swing, uint8_t horizontal_swing);
         };
 
     } // namespace voltas_ac_climate_ir

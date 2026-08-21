@@ -198,5 +198,47 @@ namespace esphome
             }
         }
 
+        bool VoltasACClimateIR::get_vertical_swing_from_mode(esphome::climate::ClimateSwingMode swing_mode)
+        {
+            switch (swing_mode)
+            {
+            case esphome::climate::CLIMATE_SWING_VERTICAL:
+            case esphome::climate::CLIMATE_SWING_BOTH:
+                return true; // Vertical swing is enabled
+            case esphome::climate::CLIMATE_SWING_OFF:
+                return false; // Vertical swing is disabled
+            default:
+                ESP_LOGW(TAG, "Unsupported swing mode: %d", static_cast<int>(swing_mode));
+                return false; // Default to disabled if unsupported
+            }
+        }
+
+        bool VoltasACClimateIR::get_horizontal_swing_from_mode(esphome::climate::ClimateSwingMode swing_mode)
+        {
+            switch (swing_mode)
+            {
+            case esphome::climate::CLIMATE_SWING_HORIZONTAL:
+            case esphome::climate::CLIMATE_SWING_BOTH:
+                return true; // Horizontal swing is enabled
+            case esphome::climate::CLIMATE_SWING_OFF:
+                return false; // Horizontal swing is disabled
+            default:
+                ESP_LOGW(TAG, "Unsupported swing mode: %d", static_cast<int>(swing_mode));
+                return false; // Default to disabled if unsupported
+            }
+        }
+
+        esphome::climate::ClimateSwingMode VoltasACClimateIR::get_swing_mode_from_bits(uint8_t vertical_swing, uint8_t horizontal_swing)
+        {
+            if (vertical_swing && horizontal_swing)
+                return esphome::climate::CLIMATE_SWING_BOTH;
+            else if (vertical_swing)
+                return esphome::climate::CLIMATE_SWING_VERTICAL;
+            else if (horizontal_swing)
+                return esphome::climate::CLIMATE_SWING_HORIZONTAL;
+            else
+                return esphome::climate::CLIMATE_SWING_OFF;
+        }
+
     } // namespace voltas_ac_climate_ir
 } // namespace esphome
