@@ -123,6 +123,34 @@ namespace esphome
             update_checksum();                                                     // Recalculate the checksum after changing the horizontal swing state
         }
 
+        // TURBO
+        // -----
+
+        bool VoltasIRFrame::get_turbo() const
+        {
+            return (frame_[2] & 0b00100000) != 0; // Check if the turbo bit (bit 5) in Byte 2 is set
+        }
+
+        void VoltasIRFrame::set_turbo(bool on)
+        {
+            frame_[2] = (frame_[2] & 0b11011111) | (on ? 0b00100000 : 0b00000000); // Set the turbo bit in Byte 2 (bit 5)
+            update_checksum();                                                     // Recalculate the checksum after changing the turbo state
+        }
+
+        // ECO-SAVER
+        // ---------
+
+        bool VoltasIRFrame::get_eco_saver() const
+        {
+            return (frame_[3] & 0b01000000) != 0; // Check if the eco-saver bit (bit 6) in Byte 3 is set
+        }
+
+        void VoltasIRFrame::set_eco_saver(bool on)
+        {
+            frame_[3] = (frame_[3] & 0b10111111) | (on ? 0b01000000 : 0b00000000); // Set the eco-saver bit in Byte 3 (bit 6)
+            update_checksum();                                                     // Recalculate the checksum after changing the eco-saver state
+        }
+
         // CHECKSUM
         // --------
 

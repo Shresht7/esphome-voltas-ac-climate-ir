@@ -48,11 +48,15 @@ namespace esphome
                 frame.set_mode(climate_mode);
             }
 
-            // Set the swing modes
-            bool vertical_swing = get_vertical_swing_from_mode(this->swing_mode);
-            bool horizontal_swing = get_horizontal_swing_from_mode(this->swing_mode);
-            frame.set_vertical_swing(vertical_swing);
-            frame.set_horizontal_swing(horizontal_swing);
+            // Set the vertical and horizontal swing states based on the current swing mode
+            const SwingBits swing_bits = get_swing_bits(this->swing_mode);
+            frame.set_vertical_swing(swing_bits.vertical);
+            frame.set_horizontal_swing(swing_bits.horizontal);
+
+            // Set the turbo and eco-saver states based on the current preset
+            const PresetBits preset = get_preset_bits(this->preset.value_or(esphome::climate::CLIMATE_PRESET_NONE));
+            frame.set_turbo(preset.turbo);
+            frame.set_eco_saver(preset.eco_saver);
 
             // Construct the IR Payload
             const uint8_t *payload = frame.payload();
@@ -86,6 +90,14 @@ namespace esphome
                      frame.payload()[0], frame.payload()[1], frame.payload()[2], frame.payload()[3], frame.payload()[4],
                      frame.payload()[5], frame.payload()[6], frame.payload()[7], frame.payload()[8], frame.payload()[9]);
 
+            // Validate the target temperature before mutating any state, so a rejected frame leaves no partial updates behind
+            const uint8_t received_temperature = frame.get_temperature();
+            if (received_temperature < MIN_TEMPERATURE || received_temperature > MAX_TEMPERATURE)
+            {
+                ESP_LOGD(TAG, "Received temperature %d is out of range (%f - %f)", received_temperature, MIN_TEMPERATURE, MAX_TEMPERATURE);
+                return false; // Temperature out of range, return false to indicate unsuccessful reception
+            }
+
             // Update the climate state based on the received frame
             if (!frame.get_power())
             {
@@ -99,12 +111,6 @@ namespace esphome
             }
 
             // Update the target temperature based on the received frame
-            const uint8_t received_temperature = frame.get_temperature();
-            if (received_temperature < MIN_TEMPERATURE || received_temperature > MAX_TEMPERATURE)
-            {
-                ESP_LOGD(TAG, "Received temperature %d is out of range (%f - %f)", received_temperature, MIN_TEMPERATURE, MAX_TEMPERATURE);
-                return false; // Temperature out of range, return false to indicate unsuccessful reception
-            }
             this->target_temperature = static_cast<float>(received_temperature);
 
             // Update the fan mode based on the received frame (defaulting to AUTO if the received fan speed is unsupported)
@@ -115,6 +121,11 @@ namespace esphome
             const bool received_vertical_swing = frame.get_vertical_swing();
             const bool received_horizontal_swing = frame.get_horizontal_swing();
             this->swing_mode = get_swing_mode_from_bits(received_vertical_swing, received_horizontal_swing);
+
+            // Update the preset based on the received frame
+            const bool received_turbo = frame.get_turbo();
+            const bool received_eco_saver = frame.get_eco_saver();
+            this->preset = get_preset_from_bits(received_turbo, received_eco_saver);
 
             this->publish_state(); // Publish the updated state to Home Assistant
             return true;           // Indicate successful reception
@@ -209,37 +220,25 @@ namespace esphome
             }
         }
 
-        bool VoltasACClimateIR::get_vertical_swing_from_mode(esphome::climate::ClimateSwingMode swing_mode)
+        SwingBits VoltasACClimateIR::get_swing_bits(esphome::climate::ClimateSwingMode swing_mode)
         {
             switch (swing_mode)
             {
+            case esphome::climate::CLIMATE_SWING_BOTH:
+                return {true, true}; // Both swings are enabled
             case esphome::climate::CLIMATE_SWING_VERTICAL:
-            case esphome::climate::CLIMATE_SWING_BOTH:
-                return true; // Vertical swing is enabled
-            case esphome::climate::CLIMATE_SWING_OFF:
-                return false; // Vertical swing is disabled
-            default:
-                ESP_LOGW(TAG, "Unsupported swing mode: %d", static_cast<int>(swing_mode));
-                return false; // Default to disabled if unsupported
-            }
-        }
-
-        bool VoltasACClimateIR::get_horizontal_swing_from_mode(esphome::climate::ClimateSwingMode swing_mode)
-        {
-            switch (swing_mode)
-            {
+                return {true, false}; // Only vertical swing is enabled
             case esphome::climate::CLIMATE_SWING_HORIZONTAL:
-            case esphome::climate::CLIMATE_SWING_BOTH:
-                return true; // Horizontal swing is enabled
+                return {false, true}; // Only horizontal swing is enabled
             case esphome::climate::CLIMATE_SWING_OFF:
-                return false; // Horizontal swing is disabled
+                return {false, false}; // Both swings are disabled
             default:
                 ESP_LOGW(TAG, "Unsupported swing mode: %d", static_cast<int>(swing_mode));
-                return false; // Default to disabled if unsupported
+                return {false, false}; // Default to disabled if unsupported
             }
         }
 
-        esphome::climate::ClimateSwingMode VoltasACClimateIR::get_swing_mode_from_bits(uint8_t vertical_swing, uint8_t horizontal_swing)
+        esphome::climate::ClimateSwingMode VoltasACClimateIR::get_swing_mode_from_bits(bool vertical_swing, bool horizontal_swing)
         {
             if (vertical_swing && horizontal_swing)
                 return esphome::climate::CLIMATE_SWING_BOTH;
@@ -249,6 +248,32 @@ namespace esphome
                 return esphome::climate::CLIMATE_SWING_HORIZONTAL;
             else
                 return esphome::climate::CLIMATE_SWING_OFF;
+        }
+
+        PresetBits VoltasACClimateIR::get_preset_bits(esphome::climate::ClimatePreset preset)
+        {
+            switch (preset)
+            {
+            case esphome::climate::CLIMATE_PRESET_BOOST:
+                return {true, false}; // Turbo is enabled, eco-saver is disabled
+            case esphome::climate::CLIMATE_PRESET_ECO:
+                return {false, true}; // Eco-saver is enabled, turbo is disabled
+            case esphome::climate::CLIMATE_PRESET_NONE:
+                return {false, false}; // Turbo and eco-saver are disabled
+            default:
+                ESP_LOGW(TAG, "Unsupported preset: %d", static_cast<int>(preset));
+                return {false, false}; // Default to disabled if unsupported
+            }
+        }
+
+        esphome::climate::ClimatePreset VoltasACClimateIR::get_preset_from_bits(bool turbo, bool eco_saver)
+        {
+            if (turbo)
+                return esphome::climate::CLIMATE_PRESET_BOOST; // Turbo takes precedence over Eco-saver
+            else if (eco_saver)
+                return esphome::climate::CLIMATE_PRESET_ECO;
+            else
+                return esphome::climate::CLIMATE_PRESET_NONE;
         }
 
     } // namespace voltas_ac_climate_ir
