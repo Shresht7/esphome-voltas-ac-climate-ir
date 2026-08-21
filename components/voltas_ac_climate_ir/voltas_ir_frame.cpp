@@ -190,11 +190,17 @@ namespace esphome
             frame_[9] = calculate_checksum(); // Set the checksum in Byte 9
         }
 
+        // PAYLOAD
+        // -------
+
         const uint8_t *VoltasIRFrame::payload() const
         {
             const_cast<VoltasIRFrame *>(this)->update_checksum(); // Ensure the checksum is up-to-date before returning the payload
             return frame_;                                        // Return the pointer to the frame array
         }
+
+        // ENCODE
+        // ------
 
         void VoltasIRFrame::encode(remote_base::RemoteTransmitData *data) const
         {
@@ -228,6 +234,9 @@ namespace esphome
             // Footer: Final Mark and Trailing Space to end the frame
             data->item(DURATION_MARK, DURATION_FOOTER);
         }
+
+        // DECODE
+        // ------
 
         bool VoltasIRFrame::decode(remote_base::RemoteReceiveData *data)
         {
