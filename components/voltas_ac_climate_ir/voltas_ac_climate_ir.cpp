@@ -90,6 +90,14 @@ namespace esphome
                      frame.payload()[0], frame.payload()[1], frame.payload()[2], frame.payload()[3], frame.payload()[4],
                      frame.payload()[5], frame.payload()[6], frame.payload()[7], frame.payload()[8], frame.payload()[9]);
 
+            // Validate the target temperature before mutating any state, so a rejected frame leaves no partial updates behind
+            const uint8_t received_temperature = frame.get_temperature();
+            if (received_temperature < MIN_TEMPERATURE || received_temperature > MAX_TEMPERATURE)
+            {
+                ESP_LOGD(TAG, "Received temperature %d is out of range (%f - %f)", received_temperature, MIN_TEMPERATURE, MAX_TEMPERATURE);
+                return false; // Temperature out of range, return false to indicate unsuccessful reception
+            }
+
             // Update the climate state based on the received frame
             if (!frame.get_power())
             {
@@ -103,12 +111,6 @@ namespace esphome
             }
 
             // Update the target temperature based on the received frame
-            const uint8_t received_temperature = frame.get_temperature();
-            if (received_temperature < MIN_TEMPERATURE || received_temperature > MAX_TEMPERATURE)
-            {
-                ESP_LOGD(TAG, "Received temperature %d is out of range (%f - %f)", received_temperature, MIN_TEMPERATURE, MAX_TEMPERATURE);
-                return false; // Temperature out of range, return false to indicate unsuccessful reception
-            }
             this->target_temperature = static_cast<float>(received_temperature);
 
             // Update the fan mode based on the received frame (defaulting to AUTO if the received fan speed is unsupported)
