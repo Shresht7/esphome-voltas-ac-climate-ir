@@ -84,6 +84,15 @@ namespace esphome
             // Returns the current horizontal swing state from the frame
             bool get_horizontal_swing() const;
 
+            // TURBO
+            // -----
+
+            // Method to set the turbo mode state
+            void set_turbo(bool on);
+
+            // Returns the current turbo mode state from the frame
+            bool get_turbo() const;
+
             // PAYLOAD ENCODER / DECODER
             // -------------------------
 
