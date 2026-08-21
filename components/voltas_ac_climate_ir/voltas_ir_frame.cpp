@@ -103,7 +103,7 @@ namespace esphome
 
         bool VoltasIRFrame::get_vertical_swing() const
         {
-            return (frame_[2] & 0b00000111) != 0; // Check if all vertical swing bits (bits 2-0) are set
+            return (frame_[2] & 0b00000111) == 0b00000111; // Check if the vertical swing bits (bits 2-0) in Byte 2 are set to 111
         }
 
         void VoltasIRFrame::set_vertical_swing(bool on)
