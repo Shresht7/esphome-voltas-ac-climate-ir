@@ -54,6 +54,10 @@ namespace esphome
             frame.set_vertical_swing(vertical_swing);
             frame.set_horizontal_swing(horizontal_swing);
 
+            // Set the turbo state based on the current preset
+            bool turbo = get_turbo_from_preset(this->preset.value_or(esphome::climate::CLIMATE_PRESET_NONE));
+            frame.set_turbo(turbo);
+
             // Construct the IR Payload
             const uint8_t *payload = frame.payload();
 
@@ -115,6 +119,10 @@ namespace esphome
             const bool received_vertical_swing = frame.get_vertical_swing();
             const bool received_horizontal_swing = frame.get_horizontal_swing();
             this->swing_mode = get_swing_mode_from_bits(received_vertical_swing, received_horizontal_swing);
+
+            // Update the preset based on the received frame
+            const bool received_turbo = frame.get_turbo();
+            this->preset = get_preset_from_turbo(received_turbo);
 
             this->publish_state(); // Publish the updated state to Home Assistant
             return true;           // Indicate successful reception
