@@ -52,8 +52,8 @@ namespace esphome
 
         void VoltasIRFrame::set_power(bool on)
         {
-            frame_[2] = (on ? 0b10000000 : 0b00000000); // Set the power state in Byte 2
-            update_checksum();                          // Recalculate the checksum after changing the power state
+            frame_[2] = (frame_[2] & 0b01111111) | (on ? 0b10000000 : 0b00000000); // Set the power state bit in Byte 2
+            update_checksum();                                                     // Recalculate the checksum after changing the power state
         }
 
         // TEMPERATURE
