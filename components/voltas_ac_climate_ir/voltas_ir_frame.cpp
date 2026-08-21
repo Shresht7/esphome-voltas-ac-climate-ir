@@ -151,6 +151,20 @@ namespace esphome
             update_checksum();                                                     // Recalculate the checksum after changing the eco-saver state
         }
 
+        // LAMP
+        // ----
+
+        bool VoltasIRFrame::get_lamp() const
+        {
+            return (frame_[8] & 0b00100000) != 0; // Check if the lamp bit (bit 5) in Byte 8 is set
+        }
+
+        void VoltasIRFrame::set_lamp(bool on)
+        {
+            frame_[8] = (frame_[8] & 0b11011111) | (on ? 0b00100000 : 0b00000000); // Set the lamp bit in Byte 8 (bit 5)
+            update_checksum();                                                     // Recalculate the checksum after changing the lamp state
+        }
+
         // CHECKSUM
         // --------
 

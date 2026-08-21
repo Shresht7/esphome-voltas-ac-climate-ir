@@ -58,6 +58,9 @@ namespace esphome
             frame.set_turbo(preset.turbo);
             frame.set_eco_saver(preset.eco_saver);
 
+            // Set the lamp state (preserved across transmissions; toggled via the physical remote)
+            frame.set_lamp(this->lamp_state_);
+
             // Construct the IR Payload
             const uint8_t *payload = frame.payload();
 
@@ -126,6 +129,9 @@ namespace esphome
             const bool received_turbo = frame.get_turbo();
             const bool received_eco_saver = frame.get_eco_saver();
             this->preset = get_preset_from_bits(received_turbo, received_eco_saver);
+
+            // Store the lamp state so subsequent transmissions preserve it
+            this->lamp_state_ = frame.get_lamp();
 
             this->publish_state(); // Publish the updated state to Home Assistant
             return true;           // Indicate successful reception

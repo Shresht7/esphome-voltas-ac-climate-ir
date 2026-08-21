@@ -102,6 +102,15 @@ namespace esphome
             // Returns the current eco-saver mode state from the frame
             bool get_eco_saver() const;
 
+            // LAMP
+            // ----
+
+            // Method to set the lamp mode state
+            void set_lamp(bool on);
+
+            // Returns the current lamp mode state from the frame
+            bool get_lamp() const;
+
             // PAYLOAD ENCODER / DECODER
             // -------------------------
 
