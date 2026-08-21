@@ -52,8 +52,8 @@ namespace esphome
 
         void VoltasIRFrame::set_power(bool on)
         {
-            frame_[2] = (on ? 0b10000000 : 0b00000000); // Set the power state in Byte 2
-            update_checksum();                          // Recalculate the checksum after changing the power state
+            frame_[2] = (frame_[2] & 0b01111111) | (on ? 0b10000000 : 0b00000000); // Set the power state bit in Byte 2
+            update_checksum();                                                     // Recalculate the checksum after changing the power state
         }
 
         // TEMPERATURE
@@ -96,6 +96,31 @@ namespace esphome
         uint8_t VoltasIRFrame::get_mode() const
         {
             return frame_[1] & 0b00001111; // Extract the mode value from Byte 1 (bits 3-0)
+        }
+
+        // SWING
+        // -----
+
+        bool VoltasIRFrame::get_vertical_swing() const
+        {
+            return (frame_[2] & 0b00000111) == 0b00000111; // Check if the vertical swing bits (bits 2-0) in Byte 2 are set to 111
+        }
+
+        void VoltasIRFrame::set_vertical_swing(bool on)
+        {
+            frame_[2] = (frame_[2] & 0b11111000) | (on ? 0b00000111 : 0b00000000); // Set the vertical swing bits in Byte 2 (bits 2-0)
+            update_checksum();                                                     // Recalculate the checksum after changing the vertical swing state
+        }
+
+        bool VoltasIRFrame::get_horizontal_swing() const
+        {
+            return (frame_[8] & 0b00010000) != 0; // Check if the horizontal swing bit (bit 4) in Byte 8 is set
+        }
+
+        void VoltasIRFrame::set_horizontal_swing(bool on)
+        {
+            frame_[8] = (frame_[8] & 0b11101111) | (on ? 0b00010000 : 0b00000000); // Set the horizontal swing bit in Byte 8 (bit 4)
+            update_checksum();                                                     // Recalculate the checksum after changing the horizontal swing state
         }
 
         // CHECKSUM

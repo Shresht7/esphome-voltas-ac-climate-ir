@@ -48,6 +48,12 @@ namespace esphome
                 frame.set_mode(climate_mode);
             }
 
+            // Set the swing modes
+            bool vertical_swing = get_vertical_swing_from_mode(this->swing_mode);
+            bool horizontal_swing = get_horizontal_swing_from_mode(this->swing_mode);
+            frame.set_vertical_swing(vertical_swing);
+            frame.set_horizontal_swing(horizontal_swing);
+
             // Construct the IR Payload
             const uint8_t *payload = frame.payload();
 
@@ -104,6 +110,11 @@ namespace esphome
             // Update the fan mode based on the received frame (defaulting to AUTO if the received fan speed is unsupported)
             const uint8_t received_fan_speed = frame.get_fan_speed();
             this->fan_mode = get_fan_mode_from_speed(received_fan_speed);
+
+            // Update the swing mode based on the received frame
+            const bool received_vertical_swing = frame.get_vertical_swing();
+            const bool received_horizontal_swing = frame.get_horizontal_swing();
+            this->swing_mode = get_swing_mode_from_bits(received_vertical_swing, received_horizontal_swing);
 
             this->publish_state(); // Publish the updated state to Home Assistant
             return true;           // Indicate successful reception
@@ -196,6 +207,48 @@ namespace esphome
                 ESP_LOGW(TAG, "Unsupported mode: %d", mode);
                 return esphome::climate::CLIMATE_MODE_COOL; // Default to Cool if unsupported
             }
+        }
+
+        bool VoltasACClimateIR::get_vertical_swing_from_mode(esphome::climate::ClimateSwingMode swing_mode)
+        {
+            switch (swing_mode)
+            {
+            case esphome::climate::CLIMATE_SWING_VERTICAL:
+            case esphome::climate::CLIMATE_SWING_BOTH:
+                return true; // Vertical swing is enabled
+            case esphome::climate::CLIMATE_SWING_OFF:
+                return false; // Vertical swing is disabled
+            default:
+                ESP_LOGW(TAG, "Unsupported swing mode: %d", static_cast<int>(swing_mode));
+                return false; // Default to disabled if unsupported
+            }
+        }
+
+        bool VoltasACClimateIR::get_horizontal_swing_from_mode(esphome::climate::ClimateSwingMode swing_mode)
+        {
+            switch (swing_mode)
+            {
+            case esphome::climate::CLIMATE_SWING_HORIZONTAL:
+            case esphome::climate::CLIMATE_SWING_BOTH:
+                return true; // Horizontal swing is enabled
+            case esphome::climate::CLIMATE_SWING_OFF:
+                return false; // Horizontal swing is disabled
+            default:
+                ESP_LOGW(TAG, "Unsupported swing mode: %d", static_cast<int>(swing_mode));
+                return false; // Default to disabled if unsupported
+            }
+        }
+
+        esphome::climate::ClimateSwingMode VoltasACClimateIR::get_swing_mode_from_bits(uint8_t vertical_swing, uint8_t horizontal_swing)
+        {
+            if (vertical_swing && horizontal_swing)
+                return esphome::climate::CLIMATE_SWING_BOTH;
+            else if (vertical_swing)
+                return esphome::climate::CLIMATE_SWING_VERTICAL;
+            else if (horizontal_swing)
+                return esphome::climate::CLIMATE_SWING_HORIZONTAL;
+            else
+                return esphome::climate::CLIMATE_SWING_OFF;
         }
 
     } // namespace voltas_ac_climate_ir

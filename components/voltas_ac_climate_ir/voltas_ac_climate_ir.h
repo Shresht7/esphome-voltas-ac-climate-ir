@@ -30,6 +30,14 @@ static constexpr auto SUPPORTED_MODES = {
     esphome::climate::CLIMATE_MODE_FAN_ONLY,
 };
 
+// Supported Swing Modes
+static constexpr auto SUPPORTED_SWING_MODES = {
+    esphome::climate::CLIMATE_SWING_OFF,
+    esphome::climate::CLIMATE_SWING_VERTICAL,
+    esphome::climate::CLIMATE_SWING_HORIZONTAL,
+    esphome::climate::CLIMATE_SWING_BOTH,
+};
+
 namespace esphome
 {
     namespace voltas_ac_climate_ir
@@ -41,12 +49,13 @@ namespace esphome
         public:
             // The constructor configures the capabilities shown in Home Assistant, such as supported modes, temperature range, etc.
             VoltasACClimateIR() : esphome::climate_ir::ClimateIR(
-                                      MIN_TEMPERATURE,   // Minimum Temperature
-                                      MAX_TEMPERATURE,   // Maximum Temperature
-                                      TEMPERATURE_STEP,  // Temperature Step
-                                      SUPPORTS_DRY_MODE, // Supports Dry Mode
-                                      SUPPORTS_FAN_ONLY, // Supports Fan Only Mode
-                                      FAN_SPEEDS         // Supported Fan Speeds
+                                      MIN_TEMPERATURE,      // Minimum Temperature
+                                      MAX_TEMPERATURE,      // Maximum Temperature
+                                      TEMPERATURE_STEP,     // Temperature Step
+                                      SUPPORTS_DRY_MODE,    // Supports Dry Mode
+                                      SUPPORTS_FAN_ONLY,    // Supports Fan Only Mode
+                                      FAN_SPEEDS,           // Supported Fan Speeds
+                                      SUPPORTED_SWING_MODES // Supported Swing Modes
                                   )
             {
             }
@@ -74,6 +83,15 @@ namespace esphome
 
             // Helper function to get the climate mode from the mode
             static esphome::climate::ClimateMode get_climate_mode_from_bits(uint8_t mode);
+
+            // Helper function to get the vertical swing state from the swing mode
+            static bool get_vertical_swing_from_mode(esphome::climate::ClimateSwingMode swing_mode);
+
+            // Helper function to get the horizontal swing state from the swing mode
+            static bool get_horizontal_swing_from_mode(esphome::climate::ClimateSwingMode swing_mode);
+
+            // Helper function to get swing mode from the vertical and horizontal swing states
+            static esphome::climate::ClimateSwingMode get_swing_mode_from_bits(uint8_t vertical_swing, uint8_t horizontal_swing);
         };
 
     } // namespace voltas_ac_climate_ir
